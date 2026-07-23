@@ -37,6 +37,10 @@ dart run build_runner watch --delete-conflicting-outputs
 Moving, renaming, or deleting an XML input updates its declared generated
 output through the Dart build system.
 
+Each generated Dart file also has a `.g.dart.spoke.json` sidecar. It maps Dart
+diagnostic lines back to the nearest XML file, line, and column through
+`SpokeMlSourceMap`.
+
 ## Typed data
 
 Declare the Dart type and import for each value used by bindings:
@@ -82,7 +86,73 @@ For `ValueListenable<T>`, introduce a scoped value:
 ```
 
 These generate `ListenableBuilder` and `ValueListenableBuilder` respectively.
-The owner of a controller remains responsible for disposing it.
+Streams use the same local boundary and expose an `AsyncSnapshot`:
+
+```xml
+<Observe stream="@{controller.events}" as="snapshot">
+  <Text text="@{snapshot.data.toString()}" />
+</Observe>
+```
+
+## Dynamic collections
+
+SpokeML does not own paging, cursors, retries, or network requests. A Dart
+controller owns that policy and notifies the smallest surrounding `Observe`
+when its item collection changes.
+
+Named builder slots work with Flutter and third-party lazy widgets:
+
+```xml
+<ListView.builder itemCount="@{controller.products.length}">
+  <Builder name="itemBuilder" args="context,index">
+    <Text
+      text="@{controller.products[index].name}"
+      key="@{ValueKey(controller.products[index].id)}" />
+  </Builder>
+</ListView.builder>
+```
+
+For eager `children` collections, `ForEach` introduces item and index scope and
+requires a stable identity:
+
+```xml
+<Column>
+  <ForEach items="@{products}" as="product" index="index"
+           keyBy="@{product.id}">
+    <Text text="@{product.name}" />
+  </ForEach>
+</Column>
+```
+
+## Composition and lifecycle
+
+Layouts can include another generated layout and forward its data:
+
+```xml
+<Include layout="./product_item.xml" product="@{product}" />
+```
+
+Variables are external by default. An explicitly owned controller generates a
+thin `StatefulWidget` host while the XML renderer remains a `StatelessWidget`:
+
+```xml
+<variable
+  name="controller"
+  type="LoginController"
+  ownership="owned"
+  create="@{LoginController()}" />
+```
+
+The generated `LoginViewHost` creates and disposes the controller, then injects
+it into `LoginView`. Use `dispose="none"` for an owned resource that has no
+dispose method.
+
+Use `visible` to keep a subtree alive while hiding it. Use `if` to conditionally
+construct and dispose the subtree:
+
+```xml
+<Text text="Submitting" if="@{controller.isSubmitting}" />
+```
 
 ## Third-party widgets
 
@@ -110,10 +180,14 @@ generated file remains the final constructor type check.
 - Data expressions: `@{expression}`
 - Conditional visibility: `visible="@{expression}"`
 - Local observation: `Listenable` and `ValueListenable`
+- Stream observation through an `AsyncSnapshot` alias
+- Structural `if`, generic `ForEach`, stable keys, and named builder callbacks
+- Relative `Include` composition with parameter validation
+- Explicit owned/external resource lifecycle
 - Third-party package namespaces
 - XML file, line, and column diagnostics
+- Analyzer-backed constructor and named-parameter validation during generation
 
-Still planned: analyzer-backed constructor schemas, `Include`, conditional
-construction, lazy/paged lists, stable item keys, stream observation, explicit
-controller ownership, IDE support, and golden tests across Flutter versions.
-
+Still planned: callback signature/type validation, generated-Dart diagnostic
+source maps, richer slot schemas, IDE support, and golden tests across Flutter
+versions.

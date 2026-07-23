@@ -14,6 +14,8 @@ final class SpokeMlCompiler {
   LayoutDocument parse(String source, {String sourcePath = '<memory>'}) =>
       _parser.parse(source, sourcePath: sourcePath);
 
+  String generate(LayoutDocument document) => _generator.generate(document);
+
   String compile(String source, {String sourcePath = '<memory>'}) =>
-      _generator.generate(parse(source, sourcePath: sourcePath));
+      generate(parse(source, sourcePath: sourcePath));
 }

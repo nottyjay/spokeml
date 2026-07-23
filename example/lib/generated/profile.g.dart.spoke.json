@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "generatedLine": 18,
+      "path": "layouts/profile.xml",
+      "offset": 144,
+      "line": 8,
+      "column": 3
+    },
+    {
+      "generatedLine": 19,
+      "path": "layouts/profile.xml",
+      "offset": 157,
+      "line": 9,
+      "column": 5
+    },
+    {
+      "generatedLine": 23,
+      "path": "layouts/profile.xml",
+      "offset": 216,
+      "line": 10,
+      "column": 7
+    },
+    {
+      "generatedLine": 27,
+      "path": "layouts/profile.xml",
+      "offset": 281,
+      "line": 11,
+      "column": 9
+    },
+    {
+      "generatedLine": 33,
+      "path": "layouts/profile.xml",
+      "offset": 360,
+      "line": 12,
+      "column": 9
+    },
+    {
+      "generatedLine": 35,
+      "path": "layouts/profile.xml",
+      "offset": 393,
+      "line": 13,
+      "column": 9
+    },
+    {
+      "generatedLine": 40,
+      "path": "layouts/profile.xml",
+      "offset": 502,
+      "line": 17,
+      "column": 9
+    },
+    {
+      "generatedLine": 42,
+      "path": "layouts/profile.xml",
+      "offset": 535,
+      "line": 18,
+      "column": 9
+    },
+    {
+      "generatedLine": 45,
+      "path": "layouts/profile.xml",
+      "offset": 593,
+      "line": 19,
+      "column": 11
+    }
+  ]
+}

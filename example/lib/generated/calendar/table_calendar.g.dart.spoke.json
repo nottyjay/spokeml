@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "generatedLine": 13,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 253,
+      "line": 11,
+      "column": 3
+    },
+    {
+      "generatedLine": 14,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 266,
+      "line": 12,
+      "column": 5
+    },
+    {
+      "generatedLine": 18,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 325,
+      "line": 13,
+      "column": 7
+    },
+    {
+      "generatedLine": 22,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 390,
+      "line": 14,
+      "column": 9
+    },
+    {
+      "generatedLine": 28,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 500,
+      "line": 18,
+      "column": 9
+    },
+    {
+      "generatedLine": 30,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 533,
+      "line": 19,
+      "column": 9
+    },
+    {
+      "generatedLine": 34,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 578,
+      "line": 20,
+      "column": 11
+    },
+    {
+      "generatedLine": 38,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 647,
+      "line": 21,
+      "column": 13
+    },
+    {
+      "generatedLine": 47,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 964,
+      "line": 28,
+      "column": 13
+    },
+    {
+      "generatedLine": 49,
+      "path": "layouts/calendar/table_calendar.xml",
+      "offset": 1001,
+      "line": 29,
+      "column": 13
+    }
+  ]
+}

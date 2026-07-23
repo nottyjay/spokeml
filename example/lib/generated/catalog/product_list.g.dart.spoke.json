@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "generatedLine": 12,
+      "path": "layouts/catalog/product_list.xml",
+      "offset": 191,
+      "line": 9,
+      "column": 3
+    },
+    {
+      "generatedLine": 15,
+      "path": "layouts/catalog/product_list.xml",
+      "offset": 232,
+      "line": 10,
+      "column": 5
+    },
+    {
+      "generatedLine": 18,
+      "path": "layouts/catalog/product_list.xml",
+      "offset": 357,
+      "line": 12,
+      "column": 9
+    },
+    {
+      "generatedLine": 22,
+      "path": "layouts/catalog/product_list.xml",
+      "offset": 461,
+      "line": 15,
+      "column": 11
+    }
+  ]
+}

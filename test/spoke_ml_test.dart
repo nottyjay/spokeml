@@ -173,4 +173,143 @@ void main() {
 
     expect(output, contains('calendarFormat: table.CalendarFormat.month'));
   });
+
+  test('compiles conditional construction and stable keyed collections', () {
+    final output = compiler.compile('''
+<layout class="ProductsView">
+  <data><variable name="products" type="List&lt;Product&gt;" /></data>
+  <Column>
+    <ForEach
+      items="@{products}"
+      as="product"
+      index="index"
+      keyBy="@{product.id}">
+      <Text text="@{product.name}" if="@{!product.hidden}" />
+    </ForEach>
+  </Column>
+</layout>
+''');
+
+    expect(
+      output,
+      contains('for (final (index, product) in products.indexed)'),
+    );
+    expect(output, contains('key: ValueKey(product.id)'));
+    expect(output, contains('!product.hidden ? Text('));
+    expect(output, contains('product.name'));
+    expect(output, contains(': const SizedBox.shrink()'));
+  });
+
+  test('compiles generic named builder callbacks', () {
+    final output = compiler.compile('''
+<layout>
+  <data><variable name="products" /></data>
+  <ListView.builder itemCount="@{products.length}">
+    <Builder name="itemBuilder" args="context,index">
+      <Text text="@{products[index].name}" key="@{ValueKey(index)}" />
+    </Builder>
+  </ListView.builder>
+</layout>
+''');
+
+    expect(output, contains('ListView.builder('));
+    expect(output, contains('itemCount: products.length'));
+    expect(output, contains('itemBuilder: (context, index)'));
+    expect(output, contains('key: ValueKey(index)'));
+  });
+
+  test('stream Observe exposes an AsyncSnapshot alias', () {
+    final output = compiler.compile('''
+<layout>
+  <data><variable name="updates" /></data>
+  <Observe stream="@{updates}" as="snapshot">
+    <Text text="@{snapshot.data.toString()}" />
+  </Observe>
+</layout>
+''');
+
+    expect(output, contains('StreamBuilder('));
+    expect(output, contains('stream: updates'));
+    expect(output, contains('builder: (context, snapshot)'));
+  });
+
+  test('owned variables generate a thin stateful host', () {
+    final output = compiler.compile('''
+<layout class="LoginView">
+  <data>
+    <variable name="title" type="String" />
+    <variable
+      name="controller"
+      type="LoginController"
+      ownership="owned"
+      create="@{LoginController()}" />
+  </data>
+  <Text text="@{title}" />
+</layout>
+''');
+
+    expect(output, contains('class LoginView extends StatelessWidget'));
+    expect(output, contains('class LoginViewHost extends StatefulWidget'));
+    expect(
+      output,
+      contains('late final LoginController controller = LoginController();'),
+    );
+    expect(output, contains('controller.dispose();'));
+    expect(output, contains('title: widget.title'));
+    expect(output, contains('controller: controller'));
+  });
+
+  test('maps generated diagnostics back to the nearest XML widget', () {
+    final sourceMap = SpokeMlSourceMap.fromJson('''
+{
+  "version": 1,
+  "entries": [
+    {
+      "generatedLine": 10,
+      "path": "layouts/catalog.xml",
+      "offset": 42,
+      "line": 3,
+      "column": 5
+    },
+    {
+      "generatedLine": 20,
+      "path": "layouts/catalog.xml",
+      "offset": 90,
+      "line": 5,
+      "column": 7
+    }
+  ]
+}
+''');
+
+    expect(sourceMap.lookup(9), isNull);
+    expect(sourceMap.lookup(18)?.line, 3);
+    expect(sourceMap.lookup(22)?.line, 5);
+  });
+
+  test('keeps static login content outside independent dynamic boundaries', () {
+    final output = compiler.compile('''
+<layout class="LoginView">
+  <data><variable name="controller" /></data>
+  <Column>
+    <Text text="LOGO" />
+    <Observe valueListenable="@{controller.isSubmitting}" as="submitting">
+      <ElevatedButton
+        onPressed="@{submitting ? null : controller.login}">
+        <Text text="登录" />
+      </ElevatedButton>
+    </Observe>
+    <Observe valueListenable="@{controller.error}" as="error">
+      <Text text="@{error ?? ''}" if="@{error != null}" />
+    </Observe>
+  </Column>
+</layout>
+''');
+
+    expect(output, contains("'LOGO'"));
+    expect(output, contains('submitting ? null : controller.login'));
+    expect(output, contains('valueListenable: controller.error'));
+    expect(output, contains('error != null ? Text('));
+    expect(output, contains("error ?? ''"));
+  });
 }

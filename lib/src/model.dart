@@ -6,6 +6,7 @@ final class LayoutDocument {
     required this.imports,
     required this.variables,
     required this.root,
+    this.includes = const {},
   });
 
   final String className;
@@ -13,6 +14,21 @@ final class LayoutDocument {
   final Map<String, String> imports;
   final List<LayoutVariable> variables;
   final WidgetNode root;
+  final Map<String, ResolvedInclude> includes;
+}
+
+final class ResolvedInclude {
+  const ResolvedInclude({
+    required this.layoutPath,
+    required this.className,
+    required this.importUri,
+    required this.variables,
+  });
+
+  final String layoutPath;
+  final String className;
+  final String importUri;
+  final Set<String> variables;
 }
 
 /// A value made available to binding expressions in a layout.
@@ -21,14 +37,22 @@ final class LayoutVariable {
     required this.name,
     required this.type,
     required this.import,
+    required this.ownership,
+    required this.create,
+    required this.dispose,
     required this.location,
   });
 
   final String name;
   final String type;
   final String? import;
+  final VariableOwnership ownership;
+  final BindingValue? create;
+  final String? dispose;
   final SourceLocation location;
 }
+
+enum VariableOwnership { external, owned }
 
 /// A widget and its attributes and descendants.
 final class WidgetNode {

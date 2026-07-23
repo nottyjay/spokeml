@@ -15,27 +15,35 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
+    return /* spoke_ml:144 */ Center(
+      child: /* spoke_ml:157 */ Container(
         width: 420,
         padding: EdgeInsets.all(24),
         color: Color(0xFFF5F5F5),
-        child: Column(
+        child: /* spoke_ml:216 */ Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
+            /* spoke_ml:281 */
             Text(
               user.name,
               style: Theme.of(context).textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
+            /* spoke_ml:360 */
             SizedBox(height: 12),
+            /* spoke_ml:393 */
             Visibility(
               visible: form.showHint,
               child: Text('请确认资料后保存', textAlign: TextAlign.center),
             ),
+            /* spoke_ml:502 */
             SizedBox(height: 24),
-            ElevatedButton(onPressed: controller.save, child: Text('保存')),
+            /* spoke_ml:535 */
+            ElevatedButton(
+              onPressed: controller.save,
+              child: /* spoke_ml:593 */ Text('保存'),
+            ),
           ],
         ),
       ),

@@ -1,0 +1,13 @@
+<layout class="IncludeDemoView">
+  <data>
+    <variable name="user" />
+    <variable name="form" />
+    <variable name="controller" />
+  </data>
+
+  <Include
+    layout="./profile.xml"
+    user="@{user}"
+    form="@{form}"
+    controller="@{controller}" />
+</layout>

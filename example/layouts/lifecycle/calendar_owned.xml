@@ -1,0 +1,14 @@
+<layout class="OwnedCalendarLabelView">
+  <data>
+    <variable
+      name="calendar"
+      type="CalendarController"
+      import="package:spoke_ml_example/calendar_controller.dart"
+      ownership="owned"
+      create="@{CalendarController()}" />
+  </data>
+
+  <Observe listenable="@{calendar}">
+    <Text text="@{calendar.selectionLabel}" />
+  </Observe>
+</layout>

@@ -10,28 +10,32 @@ class CalendarDemoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
+    return /* spoke_ml:253 */ Center(
+      child: /* spoke_ml:266 */ Container(
         width: 420,
         padding: EdgeInsets.all(16),
         color: Color(0xFFF5F5F5),
-        child: Column(
+        child: /* spoke_ml:325 */ Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
+            /* spoke_ml:390 */
             Text(
               '第三方 TableCalendar',
               style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
+            /* spoke_ml:500 */
             SizedBox(height: 12),
+            /* spoke_ml:533 */
             ListenableBuilder(
               listenable: calendar,
               builder: (context, _) {
-                return Column(
+                return /* spoke_ml:578 */ Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    /* spoke_ml:647 */
                     table.TableCalendar(
                       firstDay: calendar.firstDay,
                       lastDay: calendar.lastDay,
@@ -40,7 +44,9 @@ class CalendarDemoView extends StatelessWidget {
                       onDaySelected: calendar.selectDay,
                       rowHeight: 48,
                     ),
+                    /* spoke_ml:964 */
                     SizedBox(height: 12),
+                    /* spoke_ml:1001 */
                     Text(calendar.selectionLabel, textAlign: TextAlign.center),
                   ],
                 );

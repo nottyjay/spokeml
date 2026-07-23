@@ -148,6 +148,10 @@ final class _LayoutParseContext {
     _validateNamespaces(root, imports.keys.toSet());
     _validateBindings(root, {
       'context',
+      'Key',
+      'ObjectKey',
+      'UniqueKey',
+      'ValueKey',
       ...imports.keys,
       ...variables.map((variable) => variable.name),
     });
@@ -235,7 +239,14 @@ final class _LayoutParseContext {
         );
       }
       for (final attribute in element.attributes) {
-        if (!const {'name', 'type', 'import'}.contains(attribute.localName)) {
+        if (!const {
+          'name',
+          'type',
+          'import',
+          'ownership',
+          'create',
+          'dispose',
+        }.contains(attribute.localName)) {
           throw _error(
             '<variable> does not support attribute "${attribute.name}".',
             _attributeLocation(element, attribute.name.toString()),
@@ -271,11 +282,50 @@ final class _LayoutParseContext {
           _attributeLocation(element, 'import'),
         );
       }
+      final ownershipSource =
+          element.getAttribute('ownership') ?? VariableOwnership.external.name;
+      final ownership = VariableOwnership.values
+          .where((value) => value.name == ownershipSource)
+          .firstOrNull;
+      if (ownership == null) {
+        throw _error(
+          'Variable "$name" ownership must be "external" or "owned".',
+          _attributeLocation(element, 'ownership'),
+        );
+      }
+      final createSource = element.getAttribute('create');
+      final create = createSource == null
+          ? null
+          : _parseValue(createSource, _attributeLocation(element, 'create'));
+      if (ownership == VariableOwnership.owned && create is! BindingValue) {
+        throw _error(
+          'Owned variable "$name" requires create="@{...}".',
+          create?.location ?? _locationOf(element),
+        );
+      }
+      if (ownership == VariableOwnership.external && create != null) {
+        throw _error(
+          'External variable "$name" cannot declare create.',
+          create.location,
+        );
+      }
+      final dispose = element.getAttribute('dispose');
+      if (dispose != null &&
+          dispose != 'none' &&
+          !_identifier.hasMatch(dispose)) {
+        throw _error(
+          'Variable "$name" dispose must be "none" or a method name.',
+          _attributeLocation(element, 'dispose'),
+        );
+      }
       result.add(
         LayoutVariable(
           name: name,
           type: type,
           import: import,
+          ownership: ownership,
+          create: create as BindingValue?,
+          dispose: dispose,
           location: location,
         ),
       );
@@ -336,29 +386,88 @@ final class _LayoutParseContext {
   }
 
   void _validateBindings(WidgetNode node, Set<String> roots) {
-    for (final value in node.attributes.values.whereType<BindingValue>()) {
-      final rootIdentifier = RegExp(
-        r'^[A-Za-z_][A-Za-z0-9_]*',
-      ).firstMatch(value.source)?.group(0);
-      if (rootIdentifier == null || !roots.contains(rootIdentifier)) {
-        throw _error(
-          'Binding "@{${value.source}}" references undeclared variable '
-          '"${rootIdentifier ?? value.source}".',
-          value.location,
-        );
+    final isForEach = node.namespacePrefix == null && node.name == 'ForEach';
+    for (final entry in node.attributes.entries) {
+      if (isForEach && entry.key == 'keyBy') continue;
+      if (entry.value case final BindingValue value) {
+        _validateBinding(value, roots);
       }
     }
 
     final childRoots = {...roots};
-    if (node.namespacePrefix == null && node.name == 'Observe') {
-      final alias = node.attributes['as'];
-      if (alias case LiteralValue(:final source, :final location)) {
-        _requireIdentifier(source, 'Observe alias', location);
-        childRoots.add(source);
+    if (node.namespacePrefix == null) {
+      switch (node.name) {
+        case 'Observe':
+          _addScopedIdentifier(
+            node,
+            childRoots,
+            'as',
+            'Observe alias',
+            required: false,
+          );
+          break;
+        case 'ForEach':
+          _addScopedIdentifier(node, childRoots, 'as', 'ForEach item alias');
+          _addScopedIdentifier(
+            node,
+            childRoots,
+            'index',
+            'ForEach index alias',
+            required: false,
+          );
+          if (node.attributes['keyBy'] case final BindingValue keyBy) {
+            _validateBinding(keyBy, childRoots);
+          }
+          break;
+        case 'Builder':
+          final args = node.attributes['args'];
+          if (args case LiteralValue(:final source, :final location)) {
+            for (final argument in source.split(',')) {
+              final name = argument.trim();
+              _requireIdentifier(name, 'Builder argument', location);
+              childRoots.add(name);
+            }
+          }
+          break;
       }
     }
     for (final child in node.children) {
       _validateBindings(child, childRoots);
+    }
+  }
+
+  void _validateBinding(BindingValue value, Set<String> roots) {
+    final rootIdentifier = RegExp(
+      r'[A-Za-z_][A-Za-z0-9_]*',
+    ).firstMatch(value.source)?.group(0);
+    if (rootIdentifier == null || !roots.contains(rootIdentifier)) {
+      throw _error(
+        'Binding "@{${value.source}}" references undeclared variable '
+        '"${rootIdentifier ?? value.source}".',
+        value.location,
+      );
+    }
+  }
+
+  void _addScopedIdentifier(
+    WidgetNode node,
+    Set<String> roots,
+    String attribute,
+    String label, {
+    bool required = true,
+  }) {
+    final value = node.attributes[attribute];
+    if (value == null && !required) return;
+    if (value case LiteralValue(:final source, :final location)) {
+      _requireIdentifier(source, label, location);
+      roots.add(source);
+      return;
+    }
+    if (value != null || required) {
+      throw _error(
+        '<${node.name}> requires a literal "$attribute" identifier.',
+        value?.location ?? node.location,
+      );
     }
   }
 

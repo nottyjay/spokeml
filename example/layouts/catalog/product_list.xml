@@ -1,0 +1,20 @@
+<layout class="ProductListView">
+  <data>
+    <variable
+      name="controller"
+      type="CatalogController"
+      import="package:spoke_ml_example/catalog_controller.dart" />
+  </data>
+
+  <Observe listenable="@{controller}">
+    <ListView.builder itemCount="@{controller.products.length}">
+      <Builder name="itemBuilder" args="context,index">
+        <Container
+          key="@{ValueKey(controller.products[index].id)}"
+          padding="16">
+          <Text text="@{controller.products[index].name}" />
+        </Container>
+      </Builder>
+    </ListView.builder>
+  </Observe>
+</layout>
