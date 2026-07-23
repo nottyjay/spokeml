@@ -1,0 +1,24 @@
+<layout class="ProfileView">
+  <data>
+    <variable name="user" />
+    <variable name="form" />
+    <variable name="controller" />
+  </data>
+
+  <Center>
+    <Container width="420" padding="24" color="#F5F5F5">
+      <Column mainAxisSize="min" crossAxisAlignment="stretch">
+        <Text text="@{user.name}" style="headlineMedium" textAlign="center" />
+        <SizedBox height="12" />
+        <Text
+          text="请确认资料后保存"
+          textAlign="center"
+          visible="@{form.showHint}" />
+        <SizedBox height="24" />
+        <ElevatedButton onPressed="@{controller.save}">
+          <Text text="保存" />
+        </ElevatedButton>
+      </Column>
+    </Container>
+  </Center>
+</layout>

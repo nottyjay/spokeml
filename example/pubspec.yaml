@@ -1,0 +1,23 @@
+name: spoke_ml_example
+description: Executable demonstration of a generated SpokeML layout.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  spoke_ml:
+    path: ..
+  table_calendar: ^3.2.0
+
+dev_dependencies:
+  build_runner: ">=2.14.1 <2.15.0"
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

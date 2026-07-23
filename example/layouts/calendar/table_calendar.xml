@@ -1,0 +1,35 @@
+<layout
+  class="CalendarDemoView"
+  xmlns:table="package:table_calendar/table_calendar.dart">
+  <data>
+    <variable
+      name="calendar"
+      type="CalendarController"
+      import="package:spoke_ml_example/calendar_controller.dart" />
+  </data>
+
+  <Center>
+    <Container width="420" padding="16" color="#F5F5F5">
+      <Column mainAxisSize="min" crossAxisAlignment="stretch">
+        <Text
+          text="第三方 TableCalendar"
+          style="titleLarge"
+          textAlign="center" />
+        <SizedBox height="12" />
+        <Observe listenable="@{calendar}">
+          <Column mainAxisSize="min" crossAxisAlignment="stretch">
+            <table:TableCalendar
+              firstDay="@{calendar.firstDay}"
+              lastDay="@{calendar.lastDay}"
+              focusedDay="@{calendar.focusedDay}"
+              selectedDayPredicate="@{calendar.isSelected}"
+              onDaySelected="@{calendar.selectDay}"
+              rowHeight="48" />
+            <SizedBox height="12" />
+            <Text text="@{calendar.selectionLabel}" textAlign="center" />
+          </Column>
+        </Observe>
+      </Column>
+    </Container>
+  </Center>
+</layout>

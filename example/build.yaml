@@ -1,0 +1,9 @@
+targets:
+  $default:
+    sources:
+      - "$package$"
+      - "lib/**"
+      - "layouts/**"
+      - "test/**"
+      - "web/**"
+

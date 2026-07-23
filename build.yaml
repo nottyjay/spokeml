@@ -1,0 +1,13 @@
+builders:
+  spoke_ml:
+    import: "package:spoke_ml/builder.dart"
+    builder_factories: ["spokeMlBuilder"]
+    build_extensions:
+      "^layouts/{{}}.xml":
+        - "lib/generated/{{}}.g.dart"
+    auto_apply: dependents
+    build_to: source
+    defaults:
+      generate_for:
+        - "layouts/**.xml"
+
