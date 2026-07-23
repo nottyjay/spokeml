@@ -37,9 +37,27 @@ dart run build_runner watch --delete-conflicting-outputs
 Moving, renaming, or deleting an XML input updates its declared generated
 output through the Dart build system.
 
-Each generated Dart file also has a `.g.dart.spoke.json` sidecar. It maps Dart
-diagnostic lines back to the nearest XML file, line, and column through
-`SpokeMlSourceMap`.
+Each generated Dart file also has a `.g.dart.spoke.json` sidecar. It maps
+generated Dart ranges to their XML widget, attribute, or binding-expression
+range through `SpokeMlSourceMap`.
+
+Run analysis through SpokeML to report downstream Dart type errors at their XML
+locations:
+
+```sh
+dart run spoke_ml analyze
+```
+
+For example, an invalid `itemCount="@{controller}"` binding is reported as:
+
+```text
+ERROR|COMPILE_TIME_ERROR|ARGUMENT_TYPE_NOT_ASSIGNABLE|
+layouts/catalog/product_list.xml|10|36|10|...
+```
+
+The analyzer's exit code is preserved, and diagnostics without a SpokeML map
+are passed through unchanged. This mechanism is build-time Dart tooling, so it
+works the same way for Android, iOS, macOS, Windows, Linux, and web targets.
 
 ## Typed data
 
@@ -188,6 +206,6 @@ generated file remains the final constructor type check.
 - XML file, line, and column diagnostics
 - Analyzer-backed constructor and named-parameter validation during generation
 
-Still planned: callback signature/type validation, generated-Dart diagnostic
-source maps, richer slot schemas, IDE support, and golden tests across Flutter
-versions.
+Still planned: complete callback and expression type validation, richer slot
+schemas, IDE diagnostics directly inside XML editors, and golden tests across
+Flutter versions.

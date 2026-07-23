@@ -9,10 +9,12 @@ class OwnedCalendarLabelView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return /* spoke_ml:261 */ ListenableBuilder(
-      listenable: calendar,
+    return /* spoke_ml:261:0 */ ListenableBuilder(
+      listenable: /* spoke_ml:284:8 */ calendar,
       builder: (context, _) {
-        return /* spoke_ml:300 */ Text(calendar.selectionLabel);
+        return /* spoke_ml:300:0 */ Text(
+          /* spoke_ml:314:23 */ calendar.selectionLabel,
+        );
       },
     );
   }
@@ -28,7 +30,8 @@ class OwnedCalendarLabelViewHost extends StatefulWidget {
 
 class _OwnedCalendarLabelViewHostState
     extends State<OwnedCalendarLabelViewHost> {
-  late final CalendarController calendar = CalendarController();
+  late final CalendarController calendar = /* spoke_ml:222:20 */
+      CalendarController();
 
   @override
   void dispose() {

@@ -1,19 +1,55 @@
 {
-  "version": 1,
+  "version": 2,
   "entries": [
     {
+      "generatedStart": 384,
+      "generatedEnd": 422,
       "generatedLine": 12,
       "path": "layouts/lifecycle/calendar_owned.xml",
       "offset": 261,
       "line": 11,
-      "column": 3
+      "column": 3,
+      "length": 0
     },
     {
+      "generatedStart": 442,
+      "generatedEnd": 498,
+      "generatedLine": 13,
+      "path": "layouts/lifecycle/calendar_owned.xml",
+      "offset": 284,
+      "line": 11,
+      "column": 26,
+      "length": 8
+    },
+    {
+      "generatedStart": 518,
+      "generatedEnd": 535,
       "generatedLine": 15,
       "path": "layouts/lifecycle/calendar_owned.xml",
       "offset": 300,
       "line": 12,
-      "column": 5
+      "column": 5,
+      "length": 0
+    },
+    {
+      "generatedStart": 556,
+      "generatedEnd": 964,
+      "generatedLine": 16,
+      "path": "layouts/lifecycle/calendar_owned.xml",
+      "offset": 314,
+      "line": 12,
+      "column": 19,
+      "length": 23
+    },
+    {
+      "generatedStart": 985,
+      "generatedEnd": 1208,
+      "generatedLine": 33,
+      "path": "layouts/lifecycle/calendar_owned.xml",
+      "offset": 222,
+      "line": 8,
+      "column": 17,
+      "length": 20
     }
   ]
 }

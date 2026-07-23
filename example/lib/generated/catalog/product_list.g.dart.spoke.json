@@ -1,33 +1,95 @@
 {
-  "version": 1,
+  "version": 2,
   "entries": [
     {
+      "generatedStart": 372,
+      "generatedEnd": 410,
       "generatedLine": 12,
       "path": "layouts/catalog/product_list.xml",
       "offset": 191,
       "line": 9,
-      "column": 3
+      "column": 3,
+      "length": 0
     },
     {
+      "generatedStart": 431,
+      "generatedEnd": 489,
+      "generatedLine": 13,
+      "path": "layouts/catalog/product_list.xml",
+      "offset": 214,
+      "line": 9,
+      "column": 26,
+      "length": 10
+    },
+    {
+      "generatedStart": 509,
+      "generatedEnd": 549,
       "generatedLine": 15,
       "path": "layouts/catalog/product_list.xml",
       "offset": 232,
       "line": 10,
-      "column": 5
+      "column": 5,
+      "length": 0
     },
     {
+      "generatedStart": 570,
+      "generatedEnd": 660,
+      "generatedLine": 16,
+      "path": "layouts/catalog/product_list.xml",
+      "offset": 263,
+      "line": 10,
+      "column": 36,
+      "length": 26
+    },
+    {
+      "generatedStart": 680,
+      "generatedEnd": 714,
       "generatedLine": 18,
       "path": "layouts/catalog/product_list.xml",
       "offset": 357,
       "line": 12,
-      "column": 9
+      "column": 9,
+      "length": 0
     },
     {
-      "generatedLine": 22,
+      "generatedStart": 735,
+      "generatedEnd": 867,
+      "generatedLine": 19,
+      "path": "layouts/catalog/product_list.xml",
+      "offset": 385,
+      "line": 13,
+      "column": 18,
+      "length": 39
+    },
+    {
+      "generatedStart": 887,
+      "generatedEnd": 931,
+      "generatedLine": 23,
+      "path": "layouts/catalog/product_list.xml",
+      "offset": 446,
+      "line": 14,
+      "column": 20,
+      "length": 2
+    },
+    {
+      "generatedStart": 951,
+      "generatedEnd": 976,
+      "generatedLine": 24,
       "path": "layouts/catalog/product_list.xml",
       "offset": 461,
       "line": 15,
-      "column": 11
+      "column": 11,
+      "length": 0
+    },
+    {
+      "generatedStart": 997,
+      "generatedEnd": 1128,
+      "generatedLine": 25,
+      "path": "layouts/catalog/product_list.xml",
+      "offset": 475,
+      "line": 15,
+      "column": 25,
+      "length": 31
     }
   ]
 }

@@ -1,12 +1,45 @@
 {
-  "version": 1,
+  "version": 2,
   "entries": [
     {
+      "generatedStart": 468,
+      "generatedEnd": 494,
       "generatedLine": 19,
       "path": "layouts/include_demo.xml",
       "offset": 148,
       "line": 8,
-      "column": 3
+      "column": 3,
+      "length": 0
+    },
+    {
+      "generatedStart": 514,
+      "generatedEnd": 533,
+      "generatedLine": 20,
+      "path": "layouts/include_demo.xml",
+      "offset": 196,
+      "line": 10,
+      "column": 13,
+      "length": 4
+    },
+    {
+      "generatedStart": 553,
+      "generatedEnd": 578,
+      "generatedLine": 21,
+      "path": "layouts/include_demo.xml",
+      "offset": 215,
+      "line": 11,
+      "column": 13,
+      "length": 4
+    },
+    {
+      "generatedStart": 599,
+      "generatedEnd": 625,
+      "generatedLine": 22,
+      "path": "layouts/include_demo.xml",
+      "offset": 240,
+      "line": 12,
+      "column": 19,
+      "length": 10
     }
   ]
 }

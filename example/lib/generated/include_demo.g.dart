@@ -16,10 +16,10 @@ class IncludeDemoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return /* spoke_ml:148 */ ProfileView(
-      user: user,
-      form: form,
-      controller: controller,
+    return /* spoke_ml:148:0 */ ProfileView(
+      user: /* spoke_ml:196:4 */ user,
+      form: /* spoke_ml:215:4 */ form,
+      controller: /* spoke_ml:240:10 */ controller,
     );
   }
 }

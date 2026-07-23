@@ -10,44 +10,47 @@ class CalendarDemoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return /* spoke_ml:253 */ Center(
-      child: /* spoke_ml:266 */ Container(
-        width: 420,
-        padding: EdgeInsets.all(16),
-        color: Color(0xFFF5F5F5),
-        child: /* spoke_ml:325 */ Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
+    return /* spoke_ml:253:0 */ Center(
+      child: /* spoke_ml:266:0 */ Container(
+        width: /* spoke_ml:284:3 */ 420,
+        padding: /* spoke_ml:298:2 */ EdgeInsets.all(16),
+        color: /* spoke_ml:309:7 */ Color(0xFFF5F5F5),
+        child: /* spoke_ml:325:0 */ Column(
+          crossAxisAlignment: /* spoke_ml:372:7 */ CrossAxisAlignment.stretch,
+          mainAxisSize: /* spoke_ml:347:3 */ MainAxisSize.min,
           children: [
-            /* spoke_ml:390 */
-            Text(
-              '第三方 TableCalendar',
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
+            /* spoke_ml:390:0 */ Text(
+              /* spoke_ml:412:17 */ '第三方 TableCalendar',
+              style: /* spoke_ml:448:10 */ Theme.of(
+                context,
+              ).textTheme.titleLarge,
+              textAlign: /* spoke_ml:481:6 */ TextAlign.center,
             ),
-            /* spoke_ml:500 */
-            SizedBox(height: 12),
-            /* spoke_ml:533 */
-            ListenableBuilder(
-              listenable: calendar,
+            /* spoke_ml:500:0 */ SizedBox(height: /* spoke_ml:518:2 */ 12),
+            /* spoke_ml:533:0 */ ListenableBuilder(
+              listenable: /* spoke_ml:556:8 */ calendar,
               builder: (context, _) {
-                return /* spoke_ml:578 */ Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
+                return /* spoke_ml:578:0 */ Column(
+                  crossAxisAlignment: /* spoke_ml:625:7 */
+                      CrossAxisAlignment.stretch,
+                  mainAxisSize: /* spoke_ml:600:3 */ MainAxisSize.min,
                   children: [
-                    /* spoke_ml:647 */
-                    table.TableCalendar(
-                      firstDay: calendar.firstDay,
-                      lastDay: calendar.lastDay,
-                      focusedDay: calendar.focusedDay,
-                      selectedDayPredicate: calendar.isSelected,
-                      onDaySelected: calendar.selectDay,
-                      rowHeight: 48,
+                    /* spoke_ml:647:0 */ table.TableCalendar(
+                      firstDay: /* spoke_ml:694:17 */ calendar.firstDay,
+                      lastDay: /* spoke_ml:739:16 */ calendar.lastDay,
+                      focusedDay: /* spoke_ml:786:19 */ calendar.focusedDay,
+                      selectedDayPredicate: /* spoke_ml:846:19 */
+                          calendar.isSelected,
+                      onDaySelected: /* spoke_ml:899:18 */ calendar.selectDay,
+                      rowHeight: /* spoke_ml:945:2 */ 48,
                     ),
-                    /* spoke_ml:964 */
-                    SizedBox(height: 12),
-                    /* spoke_ml:1001 */
-                    Text(calendar.selectionLabel, textAlign: TextAlign.center),
+                    /* spoke_ml:964:0 */ SizedBox(
+                      height: /* spoke_ml:982:2 */ 12,
+                    ),
+                    /* spoke_ml:1001:0 */ Text(
+                      /* spoke_ml:1015:23 */ calendar.selectionLabel,
+                      textAlign: /* spoke_ml:1052:6 */ TextAlign.center,
+                    ),
                   ],
                 );
               },

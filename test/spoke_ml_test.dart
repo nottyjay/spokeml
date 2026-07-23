@@ -287,6 +287,78 @@ void main() {
     expect(sourceMap.lookup(22)?.line, 5);
   });
 
+  test('tracks the exact XML binding expression span with CRLF input', () {
+    const source =
+        '<layout>\r\n'
+        '  <data><variable name="state" /></data>\r\n'
+        '  <Text text="@{state.title}" />\r\n'
+        '</layout>';
+    final document = compiler.parse(source, sourcePath: 'layouts/title.xml');
+    final value = document.root.attributes['text']!;
+    final expressionOffset = source.indexOf('state.title');
+
+    expect(value.valueLocation.path, 'layouts/title.xml');
+    expect(value.valueLocation.offset, expressionOffset);
+    expect(value.valueLocation.line, 3);
+    expect(value.valueLocation.column, 17);
+    expect(value.valueLocation.length, 'state.title'.length);
+  });
+
+  test('tracks the raw XML range when a binding contains an entity', () {
+    const source = '''
+<layout>
+  <data><variable name="state" /></data>
+  <Text text="young" if="@{state.age &lt; 18}" />
+</layout>
+''';
+    final document = compiler.parse(source, sourcePath: 'layouts/age.xml');
+    final value = document.root.attributes['if']!;
+
+    expect(value.source, 'state.age < 18');
+    expect(value.valueLocation.offset, source.indexOf('state.age'));
+    expect(value.valueLocation.length, 'state.age &lt; 18'.length);
+  });
+
+  test('maps a generated offset to the smallest enclosing XML span', () {
+    const outer = SourceLocation(
+      path: 'layouts/title.xml',
+      offset: 20,
+      line: 3,
+      column: 3,
+      length: 30,
+    );
+    const binding = SourceLocation(
+      path: 'layouts/title.xml',
+      offset: 32,
+      line: 3,
+      column: 15,
+      length: 11,
+    );
+    final mapped = const SpokeMlSourceMapWriter().write(
+      'final value = '
+      '/* spoke_ml:20:30 */ Text('
+      '/* spoke_ml:32:11 */ state.title);',
+      const [outer, binding],
+    );
+    final sourceMap = SpokeMlSourceMap.fromJson(mapped.mapJson);
+    final expressionOffset = mapped.source.indexOf('state.title');
+
+    expect(mapped.source, contains('spoke_ml:32:11'));
+    final offsetLocation = sourceMap.lookupOffset(expressionOffset);
+    final positionLocation = sourceMap.lookupPosition(
+      mapped.source,
+      1,
+      expressionOffset + 1,
+    );
+    for (final location in [offsetLocation, positionLocation]) {
+      expect(location?.path, binding.path);
+      expect(location?.offset, binding.offset);
+      expect(location?.line, binding.line);
+      expect(location?.column, binding.column);
+      expect(location?.length, binding.length);
+    }
+  });
+
   test('keeps static login content outside independent dynamic boundaries', () {
     final output = compiler.compile('''
 <layout class="LoginView">

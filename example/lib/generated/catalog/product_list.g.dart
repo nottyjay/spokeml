@@ -9,17 +9,21 @@ class ProductListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return /* spoke_ml:191 */ ListenableBuilder(
-      listenable: controller,
+    return /* spoke_ml:191:0 */ ListenableBuilder(
+      listenable: /* spoke_ml:214:10 */ controller,
       builder: (context, _) {
-        return /* spoke_ml:232 */ ListView.builder(
-          itemCount: controller.products.length,
+        return /* spoke_ml:232:0 */ ListView.builder(
+          itemCount: /* spoke_ml:263:26 */ controller.products.length,
           itemBuilder: (context, index) {
-            return /* spoke_ml:357 */ KeyedSubtree(
-              key: ValueKey(controller.products[index].id),
+            return /* spoke_ml:357:0 */ KeyedSubtree(
+              key: /* spoke_ml:385:39 */ ValueKey(
+                controller.products[index].id,
+              ),
               child: Container(
-                padding: EdgeInsets.all(16),
-                child: /* spoke_ml:461 */ Text(controller.products[index].name),
+                padding: /* spoke_ml:446:2 */ EdgeInsets.all(16),
+                child: /* spoke_ml:461:0 */ Text(
+                  /* spoke_ml:475:31 */ controller.products[index].name,
+                ),
               ),
             );
           },

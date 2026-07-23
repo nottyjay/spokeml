@@ -2,9 +2,11 @@ import 'model.dart';
 
 final class FlutterWidgetGenerator {
   late LayoutDocument _document;
+  var _sourceMarkers = false;
 
-  String generate(LayoutDocument document) {
+  String generate(LayoutDocument document, {bool sourceMarkers = false}) {
     _document = document;
+    _sourceMarkers = sourceMarkers;
     final externalVariables = document.variables
         .where((variable) => variable.ownership == VariableOwnership.external)
         .toList(growable: false);
@@ -65,7 +67,7 @@ $host
         .map(
           (variable) =>
               '  late final ${variable.type} ${variable.name} = '
-              '${variable.create!.source};',
+              '${_markValue(variable.create!, variable.create!.source)};',
         )
         .join('\n');
     final disposeCalls = ownedVariables
@@ -178,8 +180,7 @@ ${_indent(currentDepth)})''';
       emitted =
           '${_bool(condition, node, 'if')} ? $emitted : const SizedBox.shrink()';
     }
-    return '/* spoke_ml:${node.location.offset} */\n'
-        '${_indent(depth)}$emitted';
+    return '${_indent(depth)}${_mark(node.location, emitted)}';
   }
 
   String _emitInclude(
@@ -346,16 +347,17 @@ ${_indent(depth)}}''';
   }
 
   String _customValue(LayoutValue value) {
+    final String converted;
     if (value case BindingValue(:final source)) {
-      return source;
+      converted = source;
+    } else if (value.source == 'true' || value.source == 'false') {
+      converted = value.source;
+    } else if (num.tryParse(value.source) case final number?) {
+      converted = number.toString();
+    } else {
+      converted = "'${_escape(value.source)}'";
     }
-    if (value.source == 'true' || value.source == 'false') {
-      return value.source;
-    }
-    if (num.tryParse(value.source) case final number?) {
-      return number.toString();
-    }
-    return _string(value);
+    return _markValue(value, converted);
   }
 
   String _emitText(
@@ -479,7 +481,7 @@ ${_indent(depth)}}''';
     }
     _rejectAttributes(node, attributes);
     return _constructor('ElevatedButton', [
-      'onPressed: ${onPressed.source}',
+      'onPressed: ${_markValue(onPressed, onPressed.source)}',
       'child: ${_emitWidget(node.children.single, depth + 1)}',
     ], depth);
   }
@@ -649,9 +651,9 @@ ${_indent(depth + 1)}),''';
     final value = attributes.remove(name);
     if (value == null) return;
     if (value case BindingValue(:final source)) {
-      arguments.add('$name: $source');
+      arguments.add('$name: ${_markValue(value, source)}');
     } else if (int.tryParse(value.source) case final parsed?) {
-      arguments.add('$name: $parsed');
+      arguments.add('$name: ${_markValue(value, parsed.toString())}');
     } else {
       throw SpokeMlCompileException(
         '<${node.name}> attribute "$name" must be an integer.',
@@ -660,14 +662,21 @@ ${_indent(depth + 1)}),''';
     }
   }
 
-  String _string(LayoutValue value) => switch (value) {
-    BindingValue(:final source) => source,
-    LiteralValue(:final source) => "'${_escape(source)}'",
-  };
+  String _string(LayoutValue value) {
+    final converted = switch (value) {
+      BindingValue(:final source) => source,
+      LiteralValue(:final source) => "'${_escape(source)}'",
+    };
+    return _markValue(value, converted);
+  }
 
   String _bool(LayoutValue value, WidgetNode node, String name) {
-    if (value case BindingValue(:final source)) return source;
-    if (value.source == 'true' || value.source == 'false') return value.source;
+    if (value case BindingValue(:final source)) {
+      return _markValue(value, source);
+    }
+    if (value.source == 'true' || value.source == 'false') {
+      return _markValue(value, value.source);
+    }
     throw SpokeMlCompileException(
       '<${node.name}> attribute "$name" must be true, false, or a binding.',
       location: value.location,
@@ -675,7 +684,9 @@ ${_indent(depth + 1)}),''';
   }
 
   String _num(LayoutValue value, WidgetNode node, String name) {
-    if (value case BindingValue(:final source)) return source;
+    if (value case BindingValue(:final source)) {
+      return _markValue(value, source);
+    }
     final number = num.tryParse(value.source);
     if (number == null) {
       throw SpokeMlCompileException(
@@ -683,11 +694,13 @@ ${_indent(depth + 1)}),''';
         location: value.location,
       );
     }
-    return number.toString();
+    return _markValue(value, number.toString());
   }
 
   String _enum(LayoutValue value, String type, WidgetNode node, String name) {
-    if (value case BindingValue(:final source)) return source;
+    if (value case BindingValue(:final source)) {
+      return _markValue(value, source);
+    }
     if (!RegExp(r'^[A-Za-z][A-Za-z0-9]*$').hasMatch(value.source)) {
       throw SpokeMlCompileException(
         '<${node.name}> attribute "$name" has invalid enum value '
@@ -695,11 +708,13 @@ ${_indent(depth + 1)}),''';
         location: value.location,
       );
     }
-    return '$type.${value.source}';
+    return _markValue(value, '$type.${value.source}');
   }
 
   String _edgeInsets(LayoutValue value) {
-    if (value case BindingValue(:final source)) return source;
+    if (value case BindingValue(:final source)) {
+      return _markValue(value, source);
+    }
     final parts = value.source.split(',').map((part) => part.trim()).toList();
     final values = parts.map(num.tryParse).toList();
     if (values.any((value) => value == null) ||
@@ -711,13 +726,15 @@ ${_indent(depth + 1)}),''';
       );
     }
     if (values.length == 1) {
-      return 'EdgeInsets.all(${values.single})';
+      return _markValue(value, 'EdgeInsets.all(${values.single})');
     }
-    return 'EdgeInsets.fromLTRB(${values.join(', ')})';
+    return _markValue(value, 'EdgeInsets.fromLTRB(${values.join(', ')})');
   }
 
   String _color(LayoutValue value) {
-    if (value case BindingValue(:final source)) return source;
+    if (value case BindingValue(:final source)) {
+      return _markValue(value, source);
+    }
     final hex = value.source.replaceFirst('#', '');
     if (!RegExp(r'^(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$').hasMatch(hex)) {
       throw SpokeMlCompileException(
@@ -725,11 +742,16 @@ ${_indent(depth + 1)}),''';
         location: value.location,
       );
     }
-    return 'Color(0x${hex.length == 6 ? 'FF' : ''}${hex.toUpperCase()})';
+    return _markValue(
+      value,
+      'Color(0x${hex.length == 6 ? 'FF' : ''}${hex.toUpperCase()})',
+    );
   }
 
   String _alignment(LayoutValue value) {
-    if (value case BindingValue(:final source)) return source;
+    if (value case BindingValue(:final source)) {
+      return _markValue(value, source);
+    }
     const supported = {
       'topLeft',
       'topCenter',
@@ -747,18 +769,20 @@ ${_indent(depth + 1)}),''';
         location: value.location,
       );
     }
-    return 'Alignment.${value.source}';
+    return _markValue(value, 'Alignment.${value.source}');
   }
 
   String _textStyle(LayoutValue value) {
-    if (value case BindingValue(:final source)) return source;
+    if (value case BindingValue(:final source)) {
+      return _markValue(value, source);
+    }
     if (!RegExp(r'^[A-Za-z][A-Za-z0-9]*$').hasMatch(value.source)) {
       throw SpokeMlCompileException(
         'Invalid text style "${value.source}".',
         location: value.location,
       );
     }
-    return 'Theme.of(context).textTheme.${value.source}';
+    return _markValue(value, 'Theme.of(context).textTheme.${value.source}');
   }
 
   void _expectChildren(
@@ -797,11 +821,20 @@ ${_indent(depth + 1)}),''';
 
   String _bindingExpression(LayoutValue value, WidgetNode node) {
     if (value case BindingValue(:final source)) {
-      return source;
+      return _markValue(value, source);
     }
     throw SpokeMlCompileException(
       '<${node.name}> requires a binding expression.',
       location: value.location,
     );
+  }
+
+  String _markValue(LayoutValue value, String source) =>
+      _mark(value.valueLocation, source);
+
+  String _mark(SourceLocation location, String source) {
+    if (!_sourceMarkers) return source;
+    final key = '${location.offset}:${location.length}';
+    return '/* spoke_ml:$key */ $source';
   }
 }

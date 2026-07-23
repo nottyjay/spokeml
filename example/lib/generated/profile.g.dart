@@ -15,34 +15,34 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return /* spoke_ml:144 */ Center(
-      child: /* spoke_ml:157 */ Container(
-        width: 420,
-        padding: EdgeInsets.all(24),
-        color: Color(0xFFF5F5F5),
-        child: /* spoke_ml:216 */ Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
+    return /* spoke_ml:144:0 */ Center(
+      child: /* spoke_ml:157:0 */ Container(
+        width: /* spoke_ml:175:3 */ 420,
+        padding: /* spoke_ml:189:2 */ EdgeInsets.all(24),
+        color: /* spoke_ml:200:7 */ Color(0xFFF5F5F5),
+        child: /* spoke_ml:216:0 */ Column(
+          crossAxisAlignment: /* spoke_ml:263:7 */ CrossAxisAlignment.stretch,
+          mainAxisSize: /* spoke_ml:238:3 */ MainAxisSize.min,
           children: [
-            /* spoke_ml:281 */
-            Text(
-              user.name,
-              style: Theme.of(context).textTheme.headlineMedium,
-              textAlign: TextAlign.center,
+            /* spoke_ml:281:0 */ Text(
+              /* spoke_ml:295:9 */ user.name,
+              style: /* spoke_ml:314:14 */ Theme.of(
+                context,
+              ).textTheme.headlineMedium,
+              textAlign: /* spoke_ml:341:6 */ TextAlign.center,
             ),
-            /* spoke_ml:360 */
-            SizedBox(height: 12),
-            /* spoke_ml:393 */
-            Visibility(
-              visible: form.showHint,
-              child: Text('请确认资料后保存', textAlign: TextAlign.center),
+            /* spoke_ml:360:0 */ SizedBox(height: /* spoke_ml:378:2 */ 12),
+            /* spoke_ml:393:0 */ Visibility(
+              visible: /* spoke_ml:475:13 */ form.showHint,
+              child: Text(
+                /* spoke_ml:415:8 */ '请确认资料后保存',
+                textAlign: /* spoke_ml:446:6 */ TextAlign.center,
+              ),
             ),
-            /* spoke_ml:502 */
-            SizedBox(height: 24),
-            /* spoke_ml:535 */
-            ElevatedButton(
-              onPressed: controller.save,
-              child: /* spoke_ml:593 */ Text('保存'),
+            /* spoke_ml:502:0 */ SizedBox(height: /* spoke_ml:520:2 */ 24),
+            /* spoke_ml:535:0 */ ElevatedButton(
+              onPressed: /* spoke_ml:564:15 */ controller.save,
+              child: /* spoke_ml:593:0 */ Text(/* spoke_ml:605:2 */ '保存'),
             ),
           ],
         ),

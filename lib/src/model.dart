@@ -72,15 +72,17 @@ final class WidgetNode {
 }
 
 sealed class LayoutValue {
-  const LayoutValue(this.location);
+  const LayoutValue(this.location, {SourceLocation? valueLocation})
+    : valueLocation = valueLocation ?? location;
 
   String get source;
   final SourceLocation location;
+  final SourceLocation valueLocation;
 }
 
 /// A constant value written directly in XML.
 final class LiteralValue extends LayoutValue {
-  const LiteralValue(this.source, super.location);
+  const LiteralValue(this.source, super.location, {super.valueLocation});
 
   @override
   final String source;
@@ -88,7 +90,7 @@ final class LiteralValue extends LayoutValue {
 
 /// A Dart expression written as `@{expression}`.
 final class BindingValue extends LayoutValue {
-  const BindingValue(this.source, super.location);
+  const BindingValue(this.source, super.location, {super.valueLocation});
 
   @override
   final String source;
@@ -101,12 +103,14 @@ final class SourceLocation {
     required this.offset,
     required this.line,
     required this.column,
+    this.length = 0,
   });
 
   final String path;
   final int offset;
   final int line;
   final int column;
+  final int length;
 
   @override
   String toString() => '$path:$line:$column';

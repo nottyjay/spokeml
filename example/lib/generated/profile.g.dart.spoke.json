@@ -1,68 +1,245 @@
 {
-  "version": 1,
+  "version": 2,
   "entries": [
     {
+      "generatedStart": 400,
+      "generatedEnd": 422,
       "generatedLine": 18,
       "path": "layouts/profile.xml",
       "offset": 144,
       "line": 8,
-      "column": 3
+      "column": 3,
+      "length": 0
     },
     {
+      "generatedStart": 442,
+      "generatedEnd": 469,
       "generatedLine": 19,
       "path": "layouts/profile.xml",
       "offset": 157,
       "line": 9,
-      "column": 5
+      "column": 5,
+      "length": 0
     },
     {
+      "generatedStart": 489,
+      "generatedEnd": 512,
+      "generatedLine": 20,
+      "path": "layouts/profile.xml",
+      "offset": 175,
+      "line": 9,
+      "column": 23,
+      "length": 3
+    },
+    {
+      "generatedStart": 532,
+      "generatedEnd": 568,
+      "generatedLine": 21,
+      "path": "layouts/profile.xml",
+      "offset": 189,
+      "line": 9,
+      "column": 37,
+      "length": 2
+    },
+    {
+      "generatedStart": 588,
+      "generatedEnd": 623,
+      "generatedLine": 22,
+      "path": "layouts/profile.xml",
+      "offset": 200,
+      "line": 9,
+      "column": 48,
+      "length": 7
+    },
+    {
+      "generatedStart": 643,
+      "generatedEnd": 682,
       "generatedLine": 23,
       "path": "layouts/profile.xml",
       "offset": 216,
       "line": 10,
-      "column": 7
+      "column": 7,
+      "length": 0
     },
     {
+      "generatedStart": 702,
+      "generatedEnd": 755,
+      "generatedLine": 24,
+      "path": "layouts/profile.xml",
+      "offset": 263,
+      "line": 10,
+      "column": 54,
+      "length": 7
+    },
+    {
+      "generatedStart": 775,
+      "generatedEnd": 828,
+      "generatedLine": 25,
+      "path": "layouts/profile.xml",
+      "offset": 238,
+      "line": 10,
+      "column": 29,
+      "length": 3
+    },
+    {
+      "generatedStart": 848,
+      "generatedEnd": 869,
       "generatedLine": 27,
       "path": "layouts/profile.xml",
       "offset": 281,
       "line": 11,
-      "column": 9
+      "column": 9,
+      "length": 0
     },
     {
-      "generatedLine": 33,
+      "generatedStart": 889,
+      "generatedEnd": 922,
+      "generatedLine": 28,
+      "path": "layouts/profile.xml",
+      "offset": 295,
+      "line": 11,
+      "column": 23,
+      "length": 9
+    },
+    {
+      "generatedStart": 943,
+      "generatedEnd": 1046,
+      "generatedLine": 29,
+      "path": "layouts/profile.xml",
+      "offset": 314,
+      "line": 11,
+      "column": 42,
+      "length": 14
+    },
+    {
+      "generatedStart": 1066,
+      "generatedEnd": 1112,
+      "generatedLine": 32,
+      "path": "layouts/profile.xml",
+      "offset": 341,
+      "line": 11,
+      "column": 69,
+      "length": 6
+    },
+    {
+      "generatedStart": 1132,
+      "generatedEnd": 1150,
+      "generatedLine": 34,
       "path": "layouts/profile.xml",
       "offset": 360,
       "line": 12,
-      "column": 9
+      "column": 9,
+      "length": 0
     },
     {
+      "generatedStart": 1170,
+      "generatedEnd": 1188,
+      "generatedLine": 34,
+      "path": "layouts/profile.xml",
+      "offset": 378,
+      "line": 12,
+      "column": 27,
+      "length": 2
+    },
+    {
+      "generatedStart": 1208,
+      "generatedEnd": 1244,
       "generatedLine": 35,
       "path": "layouts/profile.xml",
       "offset": 393,
       "line": 13,
-      "column": 9
+      "column": 9,
+      "length": 0
     },
     {
-      "generatedLine": 40,
+      "generatedStart": 1265,
+      "generatedEnd": 1324,
+      "generatedLine": 36,
+      "path": "layouts/profile.xml",
+      "offset": 475,
+      "line": 16,
+      "column": 22,
+      "length": 13
+    },
+    {
+      "generatedStart": 1344,
+      "generatedEnd": 1384,
+      "generatedLine": 38,
+      "path": "layouts/profile.xml",
+      "offset": 415,
+      "line": 14,
+      "column": 17,
+      "length": 8
+    },
+    {
+      "generatedStart": 1404,
+      "generatedEnd": 1467,
+      "generatedLine": 39,
+      "path": "layouts/profile.xml",
+      "offset": 446,
+      "line": 15,
+      "column": 22,
+      "length": 6
+    },
+    {
+      "generatedStart": 1487,
+      "generatedEnd": 1505,
+      "generatedLine": 42,
       "path": "layouts/profile.xml",
       "offset": 502,
       "line": 17,
-      "column": 9
+      "column": 9,
+      "length": 0
     },
     {
+      "generatedStart": 1525,
+      "generatedEnd": 1543,
       "generatedLine": 42,
+      "path": "layouts/profile.xml",
+      "offset": 520,
+      "line": 17,
+      "column": 27,
+      "length": 2
+    },
+    {
+      "generatedStart": 1563,
+      "generatedEnd": 1605,
+      "generatedLine": 43,
       "path": "layouts/profile.xml",
       "offset": 535,
       "line": 18,
-      "column": 9
+      "column": 9,
+      "length": 0
     },
     {
+      "generatedStart": 1626,
+      "generatedEnd": 1665,
+      "generatedLine": 44,
+      "path": "layouts/profile.xml",
+      "offset": 564,
+      "line": 18,
+      "column": 38,
+      "length": 15
+    },
+    {
+      "generatedStart": 1685,
+      "generatedEnd": 1691,
       "generatedLine": 45,
       "path": "layouts/profile.xml",
       "offset": 593,
       "line": 19,
-      "column": 11
+      "column": 11,
+      "length": 0
+    },
+    {
+      "generatedStart": 1711,
+      "generatedEnd": 1780,
+      "generatedLine": 45,
+      "path": "layouts/profile.xml",
+      "offset": 605,
+      "line": 19,
+      "column": 23,
+      "length": 2
     }
   ]
 }

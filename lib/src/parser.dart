@@ -296,7 +296,11 @@ final class _LayoutParseContext {
       final createSource = element.getAttribute('create');
       final create = createSource == null
           ? null
-          : _parseValue(createSource, _attributeLocation(element, 'create'));
+          : _parseValue(
+              createSource,
+              _attributeLocation(element, 'create'),
+              _attributeValueLocation(element, 'create'),
+            );
       if (ownership == VariableOwnership.owned && create is! BindingValue) {
         throw _error(
           'Owned variable "$name" requires create="@{...}".',
@@ -351,6 +355,7 @@ final class _LayoutParseContext {
           attribute.localName: _parseValue(
             attribute.value,
             _attributeLocation(element, attribute.name.toString()),
+            _attributeValueLocation(element, attribute.name.toString()),
           ),
       }),
       children: List.unmodifiable(
@@ -373,16 +378,41 @@ final class _LayoutParseContext {
     }
   }
 
-  LayoutValue _parseValue(String source, SourceLocation location) {
-    final match = _binding.firstMatch(source.trim());
+  LayoutValue _parseValue(
+    String valueSource,
+    SourceLocation location, [
+    SourceLocation? valueLocation,
+  ]) {
+    final match = _binding.firstMatch(valueSource.trim());
     if (match == null) {
-      return LiteralValue(source, location);
+      return LiteralValue(valueSource, location, valueLocation: valueLocation);
     }
     final expression = match.group(1)!.trim();
     if (expression.isEmpty) {
       throw _error('A binding expression cannot be empty.', location);
     }
-    return BindingValue(expression, location);
+    final rawValue = valueLocation == null
+        ? valueSource
+        : source.substring(
+            valueLocation.offset,
+            valueLocation.offset + valueLocation.length,
+          );
+    final rawExpression =
+        _binding.firstMatch(rawValue.trim())?.group(1) ?? expression;
+    final trimmedRawExpression = rawExpression.trim();
+    final bindingStart = rawValue.indexOf('@{');
+    final innerStart = rawValue.indexOf(trimmedRawExpression, bindingStart + 2);
+    final expressionLocation = valueLocation == null
+        ? location
+        : _locationAt(
+            valueLocation.offset + innerStart,
+            length: trimmedRawExpression.length,
+          );
+    return BindingValue(
+      expression,
+      location,
+      valueLocation: expressionLocation,
+    );
   }
 
   void _validateBindings(WidgetNode node, Set<String> roots) {
@@ -519,7 +549,29 @@ final class _LayoutParseContext {
     return _locationAt(elementLocation.start + match.start + leadingWhitespace);
   }
 
-  SourceLocation _locationAt(int offset) {
+  SourceLocation _attributeValueLocation(XmlElement element, String name) {
+    final elementLocation = _locations[element];
+    if (elementLocation == null) {
+      return _locationOf(element);
+    }
+    final openingTag = source.substring(
+      elementLocation.start,
+      elementLocation.stop.clamp(elementLocation.start, source.length),
+    );
+    final match = RegExp(
+      '(?:^|\\s)${RegExp.escape(name)}\\s*=\\s*(["\'])',
+    ).firstMatch(openingTag);
+    if (match == null) {
+      return _attributeLocation(element, name);
+    }
+    final quote = match.group(1)!;
+    final valueStart = match.end;
+    final valueEnd = openingTag.indexOf(quote, valueStart);
+    final length = valueEnd < 0 ? 0 : valueEnd - valueStart;
+    return _locationAt(elementLocation.start + valueStart, length: length);
+  }
+
+  SourceLocation _locationAt(int offset, {int length = 0}) {
     var lower = 0;
     var upper = _lineStarts.length;
     while (lower < upper) {
@@ -536,6 +588,7 @@ final class _LayoutParseContext {
       offset: offset,
       line: lineIndex + 1,
       column: offset - _lineStarts[lineIndex] + 1,
+      length: length,
     );
   }
 

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
 
@@ -39,44 +37,16 @@ final class SpokeMlLayoutBuilder implements Builder {
     final parsed = compiler.parse(source, sourcePath: input.path);
     final document = await _resolveIncludes(parsed, buildStep);
     await const ConstructorValidator().validate(document, buildStep.resolver);
-    final generated = compiler.generate(document);
+    final generated = compiler.generate(document, sourceMarkers: true);
     final formatted = DartFormatter(
       languageVersion: DartFormatter.latestLanguageVersion,
     ).format(generated);
-    await buildStep.writeAsString(output, formatted);
-    await buildStep.writeAsString(
-      mapOutput,
-      const JsonEncoder.withIndent(
-        '  ',
-      ).convert(_createSourceMap(document, formatted)),
+    final mapped = const SpokeMlSourceMapWriter().write(
+      formatted,
+      _sourceLocations(document),
     );
-  }
-
-  Map<String, Object> _createSourceMap(
-    LayoutDocument document,
-    String generated,
-  ) {
-    final locations = {
-      for (final node in _walk(document.root))
-        node.location.offset: node.location,
-    };
-    final entries = <Map<String, Object>>[];
-    final marker = RegExp(r'/\* spoke_ml:(\d+) \*/');
-    final lines = generated.split('\n');
-    for (var index = 0; index < lines.length; index++) {
-      for (final match in marker.allMatches(lines[index])) {
-        final location = locations[int.parse(match.group(1)!)];
-        if (location == null) continue;
-        entries.add({
-          'generatedLine': index + 1,
-          'path': location.path,
-          'offset': location.offset,
-          'line': location.line,
-          'column': location.column,
-        });
-      }
-    }
-    return {'version': 1, 'entries': entries};
+    await buildStep.writeAsString(output, mapped.source);
+    await buildStep.writeAsString(mapOutput, mapped.mapJson);
   }
 
   Future<LayoutDocument> _resolveIncludes(
@@ -142,6 +112,20 @@ final class SpokeMlLayoutBuilder implements Builder {
     yield root;
     for (final child in root.children) {
       yield* _walk(child);
+    }
+  }
+
+  Iterable<SourceLocation> _sourceLocations(LayoutDocument document) sync* {
+    for (final variable in document.variables) {
+      if (variable.create case final create?) {
+        yield create.valueLocation;
+      }
+    }
+    for (final node in _walk(document.root)) {
+      yield node.location;
+      for (final value in node.attributes.values) {
+        yield value.valueLocation;
+      }
     }
   }
 }
