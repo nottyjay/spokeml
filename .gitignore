@@ -29,3 +29,9 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 /build/
 /coverage/
+
+.wolf/
+.claude/
+.codex/
+AGENTS.md
+CLAUDE.md
