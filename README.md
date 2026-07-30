@@ -354,6 +354,28 @@ SpokeML imports the mapped Dart library and validates the generated constructor
 against the analyzer. This has been tested with
 [`table_calendar`](https://pub.dev/packages/table_calendar).
 
+When a named constructor or third-party widget requires positional arguments,
+use contiguous `arg0`, `arg1`, and subsequent attributes:
+
+```xml
+<m:Image.asset
+  arg0="@{video.thumbnailUrl}"
+  fit="@{m.BoxFit.cover}" />
+```
+
+SpokeML emits positional arguments before named arguments and validates their
+count and ordering.
+
+Use `Slot` for named widget parameters such as `title`, `body`, or `leading`:
+
+```xml
+<m:Scaffold>
+  <Slot name="body">
+    <Text text="Content" />
+  </Slot>
+</m:Scaffold>
+```
+
 ## Diagnostics
 
 SpokeML reports XML parsing, schema, constructor, named-parameter, and binding

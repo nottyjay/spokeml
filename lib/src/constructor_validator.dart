@@ -62,9 +62,43 @@ final class ConstructorValidator {
       for (final parameter in constructor.formalParameters)
         if (parameter.isNamed) parameter.name!: parameter,
     };
+    final positionalParameters = constructor.formalParameters
+        .where((parameter) => parameter.isPositional)
+        .toList();
+    final positionalEntries = node.attributes.entries
+        .where((entry) => RegExp(r'^arg\d+$').hasMatch(entry.key))
+        .toList()
+      ..sort(
+        (left, right) => int.parse(
+          left.key.substring(3),
+        ).compareTo(int.parse(right.key.substring(3))),
+      );
+    for (var index = 0; index < positionalEntries.length; index++) {
+      final actualIndex = int.parse(positionalEntries[index].key.substring(3));
+      if (actualIndex != index) {
+        throw SpokeMlCompileException(
+          '<${node.name}> positional arguments must be contiguous from '
+          '"arg0"; found "${positionalEntries[index].key}".',
+          location: positionalEntries[index].value.location,
+        );
+      }
+    }
+    final requiredPositionalCount = positionalParameters
+        .where((parameter) => parameter.isRequiredPositional)
+        .length;
+    if (positionalEntries.length < requiredPositionalCount ||
+        positionalEntries.length > positionalParameters.length) {
+      throw SpokeMlCompileException(
+        '<${node.name}> supplies ${positionalEntries.length} positional '
+        'arguments, but constructor "$constructorName" expects between '
+        '$requiredPositionalCount and ${positionalParameters.length}.',
+        location: node.location,
+      );
+    }
     final supplied = <String, SourceLocation>{
       for (final entry in node.attributes.entries)
-        if (!const {'visible', 'if', 'key'}.contains(entry.key))
+        if (!const {'visible', 'if', 'key'}.contains(entry.key) &&
+            !RegExp(r'^arg\d+$').hasMatch(entry.key))
           entry.key: entry.value.location,
     };
     final builderChildren = node.children
@@ -72,6 +106,31 @@ final class ConstructorValidator {
           (child) => child.namespacePrefix == null && child.name == 'Builder',
         )
         .toList();
+    final slotChildren = node.children
+        .where(
+          (child) => child.namespacePrefix == null && child.name == 'Slot',
+        )
+        .toList();
+    for (final slot in slotChildren) {
+      final name = slot.attributes['name'];
+      if (name case LiteralValue(:final source, :final location)) {
+        if (supplied.containsKey(source)) {
+          throw SpokeMlCompileException(
+            '<Slot name="$source"> duplicates another constructor argument.',
+            location: location,
+          );
+        }
+        supplied[source] = location;
+        final parameter = parameters[source];
+        if (parameter != null && parameter.type is FunctionType) {
+          throw SpokeMlCompileException(
+            '<Slot name="$source"> cannot target a callback parameter; '
+            'use <Builder> instead.',
+            location: location,
+          );
+        }
+      }
+    }
     for (final builder in builderChildren) {
       final name = builder.attributes['name'];
       if (name case LiteralValue(:final source, :final location)) {
@@ -89,12 +148,20 @@ final class ConstructorValidator {
         }
       }
     }
-    final widgetChildCount = node.children.length - builderChildren.length;
-    if (widgetChildCount == 1) {
+    final widgetChildCount =
+        node.children.length - builderChildren.length - slotChildren.length;
+    final containsCollection = node.children.any(
+      (child) => child.namespacePrefix == null && child.name == 'ForEach',
+    );
+    if (widgetChildCount == 1 && !containsCollection) {
       supplied['child'] = node.children
-          .firstWhere((child) => !builderChildren.contains(child))
+          .firstWhere(
+            (child) =>
+                !builderChildren.contains(child) &&
+                !slotChildren.contains(child),
+          )
           .location;
-    } else if (widgetChildCount > 1) {
+    } else if (widgetChildCount > 0) {
       supplied['children'] = node.location;
     }
 

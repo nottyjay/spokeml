@@ -101,6 +101,106 @@ void main() {
     expect(output, contains('pageJumpingEnabled: true'));
   });
 
+  test('compiles positional arguments for named constructors', () {
+    final output = compiler.compile('''
+<layout xmlns:m="package:flutter/material.dart">
+  <data><variable name="assetName" type="String" /></data>
+  <m:Image.asset
+    arg0="@{assetName}"
+    width="320"
+    fit="@{m.BoxFit.cover}" />
+</layout>
+''');
+
+    expect(output, contains('m.Image.asset('));
+    expect(output, contains('assetName,'));
+    expect(output, contains('width: 320'));
+    expect(output, contains('fit: m.BoxFit.cover'));
+  });
+
+  test('rejects non-contiguous positional arguments', () {
+    expect(
+      () => compiler.compile('''
+<layout xmlns:m="package:flutter/material.dart">
+  <m:Image.asset arg1="image.png" />
+</layout>
+'''),
+      throwsA(
+        isA<SpokeMlCompileException>().having(
+          (error) => error.message,
+          'message',
+          contains('must be contiguous from "arg0"'),
+        ),
+      ),
+    );
+  });
+
+  test('accepts const expressions and closure-local parameters', () {
+    final output = compiler.compile('''
+<layout xmlns:m="package:flutter/material.dart">
+  <data><variable name="controller" /></data>
+  <m:Image
+    image="@{const m.AssetImage('image.png')}"
+    errorBuilder="@{(context, error, stackTrace) => controller.fallback(error)}" />
+</layout>
+''');
+
+    expect(output, contains("const m.AssetImage('image.png')"));
+    expect(output, contains('controller.fallback(error)'));
+  });
+
+  test('accepts literal-only binding expressions', () {
+    final output = compiler.compile('''
+<layout>
+  <SizedBox width="@{320}" height="@{0x20}" />
+</layout>
+''');
+
+    expect(output, contains('width: 320'));
+    expect(output, contains('height: 0x20'));
+  });
+
+  test('emits children for a single ForEach in a custom collection', () {
+    final output = compiler.compile('''
+<layout xmlns:m="package:flutter/material.dart">
+  <data><variable name="items" /></data>
+  <m:ListView>
+    <ForEach items="@{items}" as="item" keyBy="@{item.id}">
+      <Text text="@{item.label}" />
+    </ForEach>
+  </m:ListView>
+</layout>
+''');
+
+    expect(output, contains('m.ListView('));
+    expect(output, contains('children: ['));
+    expect(output, isNot(contains('m.ListView(\n      child:')));
+  });
+
+  test('compiles named widget slots for custom constructors', () {
+    final output = compiler.compile('''
+<layout xmlns:m="package:flutter/material.dart">
+  <m:Scaffold>
+    <Slot name="appBar">
+      <m:AppBar>
+        <Slot name="title">
+          <Text text="视频列表" />
+        </Slot>
+      </m:AppBar>
+    </Slot>
+    <Slot name="body">
+      <Center><Text text="内容" /></Center>
+    </Slot>
+  </m:Scaffold>
+</layout>
+''');
+
+    expect(output, contains('appBar:'));
+    expect(output, contains('title:'));
+    expect(output, contains('body:'));
+    expect(output, isNot(contains('m.Scaffold(\n      child:')));
+  });
+
   test('generates typed variables and local Observe boundaries', () {
     final output = compiler.compile('''
 <layout class="CounterView">

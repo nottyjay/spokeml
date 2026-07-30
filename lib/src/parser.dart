@@ -459,6 +459,14 @@ final class _LayoutParseContext {
             }
           }
           break;
+        case 'Slot':
+          _addScopedIdentifier(
+            node,
+            childRoots,
+            'name',
+            'Slot name',
+          );
+          break;
       }
     }
     for (final child in node.children) {
@@ -467,10 +475,41 @@ final class _LayoutParseContext {
   }
 
   void _validateBinding(BindingValue value, Set<String> roots) {
-    final rootIdentifier = RegExp(
-      r'[A-Za-z_][A-Za-z0-9_]*',
-    ).firstMatch(value.source)?.group(0);
-    if (rootIdentifier == null || !roots.contains(rootIdentifier)) {
+    final expression = value.source.trim();
+    if (num.tryParse(expression) != null ||
+        RegExp(r'^0[xX][0-9A-Fa-f]+$').hasMatch(expression) ||
+        const {'true', 'false', 'null'}.contains(expression) ||
+        RegExp(r'''^(['"]).*\1$''', dotAll: true).hasMatch(expression)) {
+      return;
+    }
+    final localRoots = <String>{};
+    for (final match in RegExp(
+      r'\(([^)]*)\)\s*(?:async\s*)?=>',
+    ).allMatches(value.source)) {
+      for (final parameter in match.group(1)!.split(',')) {
+        final identifiers = RegExp(
+          r'[A-Za-z_][A-Za-z0-9_]*',
+        ).allMatches(parameter).toList();
+        if (identifiers.isNotEmpty) {
+          localRoots.add(identifiers.last.group(0)!);
+        }
+      }
+    }
+    final singleParameter = RegExp(
+      r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*(?:async\s*)?=>',
+    ).firstMatch(value.source);
+    if (singleParameter != null) {
+      localRoots.add(singleParameter.group(1)!);
+    }
+
+    final rootIdentifier = RegExp(r'[A-Za-z_][A-Za-z0-9_]*')
+        .allMatches(value.source)
+        .map((match) => match.group(0)!)
+        .where((identifier) => !_dartKeywords.contains(identifier))
+        .firstOrNull;
+    if (rootIdentifier == null ||
+        (!roots.contains(rootIdentifier) &&
+            !localRoots.contains(rootIdentifier))) {
       throw _error(
         'Binding "@{${value.source}}" references undeclared variable '
         '"${rootIdentifier ?? value.source}".',

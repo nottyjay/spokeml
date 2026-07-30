@@ -125,7 +125,7 @@ $viewArguments
         ? switch (node.name) {
             'Observe' => _emitObserve(node, attributes, widgetDepth),
             'Include' => _emitInclude(node, attributes, widgetDepth),
-            'ForEach' || 'Builder' => throw SpokeMlCompileException(
+            'ForEach' || 'Builder' || 'Slot' => throw SpokeMlCompileException(
               '<${node.name}> is only valid in a children or builder slot.',
               location: node.location,
             ),
@@ -301,30 +301,75 @@ ${_indent(depth)})''';
     Map<String, LayoutValue> attributes,
     int depth,
   ) {
+    final positionalEntries = attributes.entries
+        .where((entry) => RegExp(r'^arg\d+$').hasMatch(entry.key))
+        .toList()
+      ..sort(
+        (left, right) => int.parse(
+          left.key.substring(3),
+        ).compareTo(int.parse(right.key.substring(3))),
+      );
+    for (var index = 0; index < positionalEntries.length; index++) {
+      final actualIndex = int.parse(positionalEntries[index].key.substring(3));
+      if (actualIndex != index) {
+        throw SpokeMlCompileException(
+          '<${node.name}> positional arguments must be contiguous from '
+          '"arg0"; found "${positionalEntries[index].key}".',
+          location: positionalEntries[index].value.location,
+        );
+      }
+    }
+    for (final entry in positionalEntries) {
+      attributes.remove(entry.key);
+    }
     final builders = node.children
         .where(
           (child) => child.namespacePrefix == null && child.name == 'Builder',
         )
         .toList();
+    final slots = node.children
+        .where(
+          (child) => child.namespacePrefix == null && child.name == 'Slot',
+        )
+        .toList();
     final widgetChildren = node.children
         .where(
-          (child) => child.namespacePrefix != null || child.name != 'Builder',
+          (child) =>
+              child.namespacePrefix != null ||
+              (child.name != 'Builder' && child.name != 'Slot'),
         )
         .toList();
     final arguments = <String>[
+      for (final entry in positionalEntries) _customValue(entry.value),
       for (final attribute in attributes.entries)
         '${attribute.key}: ${_customValue(attribute.value)}',
+      for (final slot in slots) _emitSlotArgument(slot, depth + 1),
       for (final builder in builders) _emitBuilderArgument(builder, depth + 1),
     ];
-    if (widgetChildren.length == 1) {
+    final containsCollection = widgetChildren.any(
+      (child) => child.namespacePrefix == null && child.name == 'ForEach',
+    );
+    if (widgetChildren.length == 1 && !containsCollection) {
       arguments.add('child: ${_emitWidget(widgetChildren.single, depth + 1)}');
-    } else if (widgetChildren.length > 1) {
+    } else if (widgetChildren.isNotEmpty) {
       arguments.add(_children(widgetChildren, depth + 1));
     }
     final type = node.namespacePrefix == null
         ? node.name
         : '${node.namespacePrefix}.${node.name}';
     return _constructor(type, arguments, depth, constWhenEmpty: false);
+  }
+
+  String _emitSlotArgument(WidgetNode node, int depth) {
+    _expectChildren(node, minimum: 1, maximum: 1);
+    final attributes = Map<String, LayoutValue>.of(node.attributes);
+    final name = _literalIdentifier(
+      _required(attributes, 'name', node),
+      node,
+      'name',
+    );
+    _rejectAttributes(node, attributes);
+    return '$name: ${_emitWidget(node.children.single, depth + 1)}';
   }
 
   String _emitBuilderArgument(WidgetNode node, int depth) {

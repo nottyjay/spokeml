@@ -340,6 +340,26 @@ LoginViewHost（StatefulWidget：持有和释放资源）
 library，并通过 analyzer 检查生成的构造调用。该能力已使用
 [`table_calendar`](https://pub.dev/packages/table_calendar) 完成验证。
 
+命名构造器或第三方组件需要位置参数时，使用连续的 `arg0`、`arg1` 属性：
+
+```xml
+<m:Image.asset
+  arg0="@{video.thumbnailUrl}"
+  fit="@{m.BoxFit.cover}" />
+```
+
+SpokeML 会按编号在命名参数之前生成位置参数，并检查参数数量与编号连续性。
+
+使用 `Slot` 传递 `title`、`body`、`leading` 等命名 Widget 参数：
+
+```xml
+<m:Scaffold>
+  <Slot name="body">
+    <Text text="内容" />
+  </Slot>
+</m:Scaffold>
+```
+
 ## 错误定位
 
 当 Source Location 可用时，SpokeML 会将 XML 解析、Schema、构造函数、命名参数和
