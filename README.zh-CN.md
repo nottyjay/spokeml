@@ -15,6 +15,10 @@ lib/generated/account/login.g.dart
 生成结果是普通、可读且可进行类型检查的 Flutter 代码。发布后的应用不需要在运行时
 解析 XML，也不依赖动态 Widget 解释器。
 
+常见 Flutter 布局 Widget 以原生 XML 标签提供，包括 `Row`、`Column`、
+`Stack`、`Positioned`、`Align`、`Container`、`Padding`、`Center` 和
+`SizedBox`。
+
 > **项目状态：** SpokeML 目前处于方案验证阶段，还不是生产就绪的软件包。代码生成、
 > Source Map、布局分组、局部状态边界、生命周期和第三方 Widget 接入均已有可执行测试；
 > example 也已在 Android 与 macOS 上完成编译和启动验证。

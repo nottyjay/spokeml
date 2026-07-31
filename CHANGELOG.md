@@ -1,3 +1,9 @@
+## Unreleased
+
+- Support the common Flutter `Stack`, `Positioned`, and `Align` widgets,
+  including standard layout, direction, fit, clipping, positioning, and
+  sizing attributes.
+
 ## 0.0.1
 
 - Compile XML layouts into Flutter widget source.

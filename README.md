@@ -16,6 +16,10 @@ lib/generated/account/login.g.dart
 The generated output is ordinary, readable, type-checkable Flutter code. There
 is no XML parser or dynamic widget interpreter in the released application.
 
+Common Flutter layout widgets are first-class XML elements. This includes
+`Row`, `Column`, `Stack`, `Positioned`, `Align`, `Container`, `Padding`,
+`Center`, and `SizedBox`.
+
 > **Project status:** SpokeML is currently a proof of concept, not a
 > production-ready package. Its generator, source mapping, grouped layouts,
 > local state boundaries, lifecycle support, and third-party widget integration

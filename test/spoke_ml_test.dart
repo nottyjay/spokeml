@@ -46,6 +46,39 @@ void main() {
     expect(output, contains('visible: state.ready'));
   });
 
+  test('compiles Stack with common positioning and alignment widgets', () {
+    final output = compiler.compile('''
+<layout>
+  <data><variable name="state" /></data>
+  <Stack
+    alignment="center"
+    textDirection="ltr"
+    fit="expand"
+    clipBehavior="none">
+    <Positioned top="12" left="@{state.offset}" width="200">
+      <Text text="浮层" />
+    </Positioned>
+    <Align alignment="bottomRight" widthFactor="1">
+      <Text text="操作" />
+    </Align>
+  </Stack>
+</layout>
+''');
+
+    expect(output, contains('Stack('));
+    expect(output, contains('alignment: Alignment.center'));
+    expect(output, contains('textDirection: TextDirection.ltr'));
+    expect(output, contains('fit: StackFit.expand'));
+    expect(output, contains('clipBehavior: Clip.none'));
+    expect(output, contains('Positioned('));
+    expect(output, contains('top: 12'));
+    expect(output, contains('left: state.offset'));
+    expect(output, contains('width: 200'));
+    expect(output, contains('Align('));
+    expect(output, contains('alignment: Alignment.bottomRight'));
+    expect(output, contains('widthFactor: 1'));
+  });
+
   test('rejects bindings to undeclared variables', () {
     expect(
       () => compiler.compile('''

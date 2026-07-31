@@ -132,6 +132,9 @@ $viewArguments
             'Text' => _emitText(node, attributes, widgetDepth),
             'Column' => _emitFlex(node, attributes, widgetDepth, 'Column'),
             'Row' => _emitFlex(node, attributes, widgetDepth, 'Row'),
+            'Stack' => _emitStack(node, attributes, widgetDepth),
+            'Positioned' => _emitPositioned(node, attributes, widgetDepth),
+            'Align' => _emitAlign(node, attributes, widgetDepth),
             'Container' => _emitContainer(node, attributes, widgetDepth),
             'Padding' => _emitPadding(node, attributes, widgetDepth),
             'Center' => _emitSingleChild(
@@ -446,6 +449,51 @@ ${_indent(depth)}}''';
     _rejectAttributes(node, attributes);
     arguments.add(_children(node.children, depth + 1));
     return _constructor(type, arguments, depth);
+  }
+
+  String _emitStack(
+    WidgetNode node,
+    Map<String, LayoutValue> attributes,
+    int depth,
+  ) {
+    final arguments = <String>[];
+    _add(arguments, 'alignment', attributes.remove('alignment'), _alignment);
+    _addEnum(arguments, 'textDirection', attributes, 'TextDirection', node);
+    _addEnum(arguments, 'fit', attributes, 'StackFit', node);
+    _addEnum(arguments, 'clipBehavior', attributes, 'Clip', node);
+    _rejectAttributes(node, attributes);
+    arguments.add(_children(node.children, depth + 1));
+    return _constructor('Stack', arguments, depth);
+  }
+
+  String _emitPositioned(
+    WidgetNode node,
+    Map<String, LayoutValue> attributes,
+    int depth,
+  ) {
+    _expectChildren(node, minimum: 1, maximum: 1);
+    final arguments = <String>[];
+    for (final name in ['left', 'top', 'right', 'bottom', 'width', 'height']) {
+      _addNum(arguments, name, attributes, node);
+    }
+    _rejectAttributes(node, attributes);
+    arguments.add('child: ${_emitWidget(node.children.single, depth + 1)}');
+    return _constructor('Positioned', arguments, depth);
+  }
+
+  String _emitAlign(
+    WidgetNode node,
+    Map<String, LayoutValue> attributes,
+    int depth,
+  ) {
+    _expectChildren(node, minimum: 1, maximum: 1);
+    final arguments = <String>[];
+    _add(arguments, 'alignment', attributes.remove('alignment'), _alignment);
+    _addNum(arguments, 'widthFactor', attributes, node);
+    _addNum(arguments, 'heightFactor', attributes, node);
+    _rejectAttributes(node, attributes);
+    arguments.add('child: ${_emitWidget(node.children.single, depth + 1)}');
+    return _constructor('Align', arguments, depth);
   }
 
   String _emitContainer(
