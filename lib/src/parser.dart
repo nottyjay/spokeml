@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:xml/xml.dart';
 import 'package:xml/xml_events.dart';
 
@@ -19,6 +21,73 @@ final class _LayoutParseContext {
   static final _typeExpression = RegExp(
     r'^[A-Za-z_][A-Za-z0-9_?.]*(?:\s*<[\sA-Za-z0-9_?.,<>\[\]]+>)?\??$',
   );
+  // dart:core is implicitly imported in generated Dart. Keep this explicit:
+  // capitalization alone must not exempt undeclared binding roots.
+  static const _dartCoreTypes = {
+    'ArgumentError',
+    'AssertionError',
+    'BigInt',
+    'bool',
+    'Comparable',
+    'Comparator',
+    'ConcurrentModificationError',
+    'DateTime',
+    'Deprecated',
+    'double',
+    'Duration',
+    'dynamic',
+    'Enum',
+    'Error',
+    'Exception',
+    'Expando',
+    'Finalizer',
+    'FormatException',
+    'Function',
+    'Future',
+    'IndexError',
+    'int',
+    'IntegerDivisionByZeroException',
+    'Invocation',
+    'Iterable',
+    'Iterator',
+    'List',
+    'Map',
+    'MapEntry',
+    'Match',
+    'Never',
+    'NoSuchMethodError',
+    'Null',
+    'num',
+    'Object',
+    'OutOfMemoryError',
+    'ParallelWaitError',
+    'Pattern',
+    'pragma',
+    'RangeError',
+    'Record',
+    'RegExp',
+    'RegExpMatch',
+    'RuneIterator',
+    'Runes',
+    'Set',
+    'Sink',
+    'StackOverflowError',
+    'StackTrace',
+    'StateError',
+    'Stopwatch',
+    'Stream',
+    'String',
+    'StringBuffer',
+    'StringSink',
+    'Symbol',
+    'Type',
+    'TypeError',
+    'UnimplementedError',
+    'UnsupportedError',
+    'Uri',
+    'UriData',
+    'WeakReference',
+  };
   static const _dartKeywords = {
     'abstract',
     'as',
@@ -147,6 +216,7 @@ final class _LayoutParseContext {
     final root = _parseWidget(widgetElements.single);
     _validateNamespaces(root, imports.keys.toSet());
     _validateBindings(root, {
+      ..._dartCoreTypes,
       'context',
       'Key',
       'ObjectKey',
@@ -460,12 +530,7 @@ final class _LayoutParseContext {
           }
           break;
         case 'Slot':
-          _addScopedIdentifier(
-            node,
-            childRoots,
-            'name',
-            'Slot name',
-          );
+          _addScopedIdentifier(node, childRoots, 'name', 'Slot name');
           break;
       }
     }
@@ -476,11 +541,32 @@ final class _LayoutParseContext {
 
   void _validateBinding(BindingValue value, Set<String> roots) {
     final expression = value.source.trim();
-    if (num.tryParse(expression) != null ||
-        RegExp(r'^0[xX][0-9A-Fa-f]+$').hasMatch(expression) ||
-        const {'true', 'false', 'null'}.contains(expression) ||
-        RegExp(r'''^(['"]).*\1$''', dotAll: true).hasMatch(expression)) {
-      return;
+    final parsed = parseString(
+      content: 'final _value = ($expression);',
+      throwIfDiagnostics: false,
+    );
+    if (parsed.errors.isNotEmpty) {
+      throw _error(
+        'Invalid binding "@{${value.source}}": ${parsed.errors.first.message}',
+        value.location,
+      );
+    }
+    final declaration =
+        parsed.unit.declarations.single as TopLevelVariableDeclaration;
+    final initializer = declaration.variables.variables.single.initializer!;
+    final identifiers = <String>[];
+    for (
+      var token = initializer.beginToken;
+      token != initializer.endToken.next;
+      token = token.next!
+    ) {
+      // Dart tokens exclude string contents and comments, while preserving
+      // identifiers inside string interpolation. Member names aren't roots.
+      if ((token.isIdentifier || _dartCoreTypes.contains(token.lexeme)) &&
+          token.previous?.lexeme != '.' &&
+          token.previous?.lexeme != '?.') {
+        identifiers.add(token.lexeme);
+      }
     }
     final localRoots = <String>{};
     for (final match in RegExp(
@@ -502,17 +588,19 @@ final class _LayoutParseContext {
       localRoots.add(singleParameter.group(1)!);
     }
 
-    final rootIdentifier = RegExp(r'[A-Za-z_][A-Za-z0-9_]*')
-        .allMatches(value.source)
-        .map((match) => match.group(0)!)
-        .where((identifier) => !_dartKeywords.contains(identifier))
+    final rootIdentifier = identifiers
+        .where(
+          (identifier) =>
+              !_dartKeywords.contains(identifier) ||
+              _dartCoreTypes.contains(identifier),
+        )
         .firstOrNull;
-    if (rootIdentifier == null ||
-        (!roots.contains(rootIdentifier) &&
-            !localRoots.contains(rootIdentifier))) {
+    if (rootIdentifier != null &&
+        !roots.contains(rootIdentifier) &&
+        !localRoots.contains(rootIdentifier)) {
       throw _error(
         'Binding "@{${value.source}}" references undeclared variable '
-        '"${rootIdentifier ?? value.source}".',
+        '"$rootIdentifier".',
         value.location,
       );
     }

@@ -1,8 +1,36 @@
+import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spoke_ml/spoke_ml.dart';
 
 void main() {
   final compiler = SpokeMlCompiler();
+
+  test('fills viewport width and retains a uniform scale', () {
+    const metrics = DesignMetrics(
+      referenceSize: Size(720, 1280),
+      viewportSize: Size(785.45, 1313.45),
+    );
+
+    expect(metrics.scale, closeTo(1.0909027778, 0.000001));
+    expect(metrics.canvasHeight, closeTo(1204.0028, 0.001));
+    final mappedSize = metrics.mapSize(const Size(100, 50));
+    expect(mappedSize.width, closeTo(109.09027778, 0.000001));
+    expect(mappedSize.height, closeTo(54.54513889, 0.000001));
+    expect(metrics.mapOffset(const Offset(100, 50)).dx, metrics.scale * 100);
+    expect(metrics.mapOffset(const Offset(100, 50)).dy, metrics.scale * 50);
+  });
+
+  test('rejects zero-sized design metrics', () {
+    const metrics = DesignMetrics(
+      referenceSize: Size(0, 1280),
+      viewportSize: Size(1080, 1920),
+    );
+
+    expect(metrics.isUsable, isFalse);
+    expect(metrics.scale, 0);
+    expect(metrics.canvasHeight, 0);
+  });
 
   test('compiles bindings and widget properties', () {
     final output = compiler.compile('''
@@ -90,6 +118,166 @@ void main() {
           'message',
           contains('undeclared variable "user"'),
         ),
+      ),
+    );
+  });
+
+  for (final widget in ['SizedBox', 'm:SizedBox']) {
+    test('compiles double.infinity in $widget', () {
+      final output = compiler.compile('''
+<layout class="InfinityProbe" xmlns:m="package:flutter/material.dart">
+  <$widget width="@{double.infinity}" height="56" />
+</layout>
+''');
+
+      expect(output, contains('width: double.infinity'));
+      expect(output, contains('height: 56'));
+    });
+  }
+
+  for (final expression in [
+    'double.nan',
+    "int.parse('56')",
+    "num.parse('1.5')",
+    "bool.fromEnvironment('enabled')",
+    'DateTime.now()',
+    'const Duration(seconds: 1)',
+    'BigInt.one',
+    "Uri.parse('https://example.com')",
+    'Object()',
+    'String',
+    'Function',
+    'dynamic',
+    'Never',
+    'List<int>',
+    'Map<String, List<double?>>',
+    '<double>[1, 2]',
+    'const <String, int>{}',
+    '<dynamic>[]',
+    'List<int>.filled(2, 0)',
+    '(double value) => value.isFinite',
+    '(Object? value) => value is int',
+    '(Object value) => value as num',
+  ]) {
+    test('accepts core type expression $expression', () {
+      final escaped = expression
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;');
+      final output = compiler.compile('''
+<layout xmlns:m="package:flutter/material.dart">
+  <m:Text data="@{($escaped).toString()}" />
+</layout>
+''');
+
+      expect(output, contains('m.Text('));
+      expect(output, contains('($expression).toString()'));
+    });
+  }
+
+  for (final root in ['missing', 'dobule', 'UnknownType', 'math']) {
+    test('keeps XML diagnostics for undeclared root $root', () {
+      final source =
+          '<layout>\r\n'
+          '  <SizedBox width="@{$root.infinity}" />\r\n'
+          '</layout>';
+
+      expect(
+        () => compiler.compile(source, sourcePath: 'layouts/unknown.xml'),
+        throwsA(
+          isA<SpokeMlCompileException>()
+              .having(
+                (error) => error.message,
+                'message',
+                contains('undeclared variable "$root"'),
+              )
+              .having(
+                (error) => error.location?.path,
+                'path',
+                'layouts/unknown.xml',
+              )
+              .having((error) => error.location?.line, 'line', 2)
+              .having((error) => error.location?.column, 'column', 13)
+              .having(
+                (error) => error.location?.offset,
+                'offset',
+                source.indexOf('width='),
+              ),
+        ),
+      );
+    });
+  }
+
+  for (final expression in [
+    "const ['TODAY', 'YESTERDAY', 'CUSTOM']",
+    "['TODAY', 'CUSTOM']",
+    '[]',
+    "(const {'key': 'TODAY'}).entries",
+    r"[r'$TODAY', 'it\'s TODAY', '''CUSTOM''']",
+    "/* TODAY */ ['CUSTOM']",
+    "['TODAY'].toList()",
+    r"['TODAY', '$controller']",
+    r"['TODAY', '${controller.toString()}']",
+  ]) {
+    test('accepts string literal binding $expression', () {
+      final output = compiler.compile('''
+<layout>
+  <data><variable name="controller" /></data>
+  <Column>
+    <ForEach items="@{$expression}" as="preset" keyBy="@{preset}">
+      <Text text="@{preset.toString()}" />
+    </ForEach>
+  </Column>
+</layout>
+''');
+      expect(output, contains('($expression).indexed'));
+    });
+  }
+
+  for (final expression in [
+    "['TODAY', missing]",
+    "['TODAY', ...missing]",
+    r"['TODAY', '$missing']",
+    r"['TODAY', '${missing.name}']",
+    r"'$missing'",
+    "/* TODAY */ missing.values",
+  ]) {
+    test('rejects unknown references beside literals: $expression', () {
+      expect(
+        () => compiler.compile(
+          '<layout>\n  <Text text="@{$expression}" />\n</layout>',
+          sourcePath: 'layouts/presets.xml',
+        ),
+        throwsA(
+          isA<SpokeMlCompileException>()
+              .having(
+                (error) => error.message,
+                'message',
+                contains('undeclared variable "missing"'),
+              )
+              .having(
+                (error) => error.location?.path,
+                'path',
+                'layouts/presets.xml',
+              )
+              .having((error) => error.location?.line, 'line', 2)
+              .having((error) => error.location?.column, 'column', 9),
+        ),
+      );
+    });
+  }
+
+  test('rejects malformed literal bindings at the XML attribute', () {
+    expect(
+      () => compiler.compile('<layout><Text text="@{[\'TODAY\'}" /></layout>'),
+      throwsA(
+        isA<SpokeMlCompileException>()
+            .having(
+              (error) => error.message,
+              'message',
+              contains('Invalid binding'),
+            )
+            .having((error) => error.location?.column, 'column', 15),
       ),
     );
   });
@@ -325,13 +513,40 @@ void main() {
 
     expect(
       output,
-      contains('for (final (index, product) in products.indexed)'),
+      contains('for (final (index, product) in (products).indexed)'),
     );
     expect(output, contains('key: ValueKey(product.id)'));
     expect(output, contains('!product.hidden ? Text('));
     expect(output, contains('product.name'));
     expect(output, contains(': const SizedBox.shrink()'));
   });
+
+  for (final items in [
+    'controller.combo ? [] : controller.skus',
+    'controller.combo ? controller.groups : []',
+    'controller.combo ? &lt;Map&lt;String, Object?&gt;&gt;[] : controller.skus',
+    'controller.optionalSkus ?? []',
+    'controller.skus',
+    'controller.skus.where((sku) => sku.isNotEmpty)',
+  ]) {
+    test('ForEach indexes the complete items expression: $items', () {
+      final output = compiler.compile('''
+<layout>
+  <data><variable name="controller" type="Controller" /></data>
+  <Column>
+    <ForEach items="@{$items}" as="sku" keyBy="@{sku['id']}">
+      <Text text="@{sku['name'].toString()}" />
+    </ForEach>
+  </Column>
+</layout>
+''');
+      final expression = items.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+
+      expect(output, contains('for (final (_, sku) in ($expression).indexed)'));
+      expect(output, contains("key: ValueKey(sku['id'])"));
+      expect(output, contains("sku['name'].toString()"));
+    });
+  }
 
   test('compiles generic named builder callbacks', () {
     final output = compiler.compile('''

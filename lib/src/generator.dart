@@ -639,7 +639,7 @@ ${_indent(depth)}}''';
     final keyBy = _required(attributes, 'keyBy', node);
     _rejectAttributes(node, attributes);
     final child = _emitWidget(node.children.single, depth + 1);
-    return '''for (final ($index, $item) in ${_bindingExpression(items, node)}.indexed)
+    return '''for (final ($index, $item) in (${_bindingExpression(items, node)}).indexed)
 ${_indent(depth + 1)}KeyedSubtree(
 ${_indent(depth + 2)}key: ValueKey(${_bindingExpression(keyBy, node)}),
 ${_indent(depth + 2)}child: $child,

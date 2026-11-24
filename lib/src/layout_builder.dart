@@ -1,7 +1,9 @@
 import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
 
-import '../spoke_ml.dart';
+import '../src/compiler.dart';
+import '../src/model.dart';
+import '../src/source_map.dart';
 import 'constructor_validator.dart';
 
 Builder spokeMlBuilder(BuilderOptions _) => const SpokeMlLayoutBuilder();
