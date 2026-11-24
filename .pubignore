@@ -8,3 +8,12 @@ RTK.md
 
 # IDE project files
 *.iml
+
+# Build artifacts (Flutter build caches can exceed 100 MB)
+.dart_tool/
+build/
+.gradle/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/

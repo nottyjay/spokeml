@@ -34,4 +34,5 @@ migrate_working_dir/
 .claude/
 .codex/
 AGENTS.md
-CLAUDE.md
+# CLAUDE.md is tracked and excluded from publishing via .pubignore instead,
+# so `dart pub publish` does not warn about gitignored-but-checked-in files.
