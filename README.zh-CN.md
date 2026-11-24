@@ -4,9 +4,9 @@
 
 **将 XML 布局编译为普通、可进行类型检查的 Flutter 代码**
 
-[![star](https://gitee.com/nottyjay/spoke-ml/badge/star.svg?theme=dark)](https://gitee.com/nottyjay/spoke-ml/stargazers)
-[![fork](https://gitee.com/nottyjay/spoke-ml/badge/fork.svg?theme=dark)](https://gitee.com/nottyjay/spoke-ml/members)
-[![issue](https://gitee.com/nottyjay/spoke-ml/badge/issue.svg?theme=dark)](https://gitee.com/nottyjay/spoke-ml/issues)
+[![GitHub Stars](https://img.shields.io/github/stars/nottyjay/spokeml?style=social&logo=github)](https://github.com/nottyjay/spokeml/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/nottyjay/spokeml?style=social&logo=github)](https://github.com/nottyjay/spokeml/forks)
+[![GitHub Issues](https://img.shields.io/github/issues/nottyjay/spokeml?style=social&logo=github)](https://github.com/nottyjay/spokeml/issues)
 
 ![Dart](https://img.shields.io/badge/Dart-%5E3.10.4-0175C2?logo=dart&logoColor=white)
 ![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.38.0-02569B?logo=flutter&logoColor=white)
@@ -52,16 +52,16 @@ Flutter 的优势：类型化代码、Tree Shaking 和现有状态管理生态�
 
 ## 仓库统计
 
-上方徽章为实时数据。下表为 **2026-11-24** 通过 Gitee API 获取的快照：
+上方徽章为 GitHub 实时数据。下表为 **2026-11-24**（仓库刚创建时）的快照：
 
 | 指标 | 数量 |
 | --- | --- |
-| ⭐ Star | 0 |
-| 🍴 Fork | 0 |
-| 👁 关注 | 1 |
+| ⭐ GitHub Star | 0 |
+| 🍴 GitHub Fork | 0 |
 | 🐛 开放 Issue | 0 |
 
-📊 实时数据请查看 [Gitee 仓库主页](https://gitee.com/nottyjay/spoke-ml)。
+📊 实时数据请查看 [GitHub 仓库主页](https://github.com/nottyjay/spokeml)。
+🪞 本仓库同步镜像至 [Gitee](https://gitee.com/nottyjay/spoke-ml)。
 
 ## 功能亮点
 
@@ -706,6 +706,6 @@ SpokeML 基于 [MIT 许可证](LICENSE) 发布。
 <div align="center">
 
 ⭐ 如果 SpokeML 对你有帮助，欢迎在
-[Gitee](https://gitee.com/nottyjay/spoke-ml) 上点一个 Star，让更多人看到它。
+[GitHub](https://github.com/nottyjay/spokeml) 上点一个 Star，让更多人看到它。
 
 </div>

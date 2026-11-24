@@ -4,9 +4,9 @@
 
 **Compile XML layouts into ordinary, type-checkable Flutter code**
 
-[![star](https://gitee.com/nottyjay/spoke-ml/badge/star.svg?theme=dark)](https://gitee.com/nottyjay/spoke-ml/stargazers)
-[![fork](https://gitee.com/nottyjay/spoke-ml/badge/fork.svg?theme=dark)](https://gitee.com/nottyjay/spoke-ml/members)
-[![issue](https://gitee.com/nottyjay/spoke-ml/badge/issue.svg?theme=dark)](https://gitee.com/nottyjay/spoke-ml/issues)
+[![GitHub Stars](https://img.shields.io/github/stars/nottyjay/spokeml?style=social&logo=github)](https://github.com/nottyjay/spokeml/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/nottyjay/spokeml?style=social&logo=github)](https://github.com/nottyjay/spokeml/forks)
+[![GitHub Issues](https://img.shields.io/github/issues/nottyjay/spokeml?style=social&logo=github)](https://github.com/nottyjay/spokeml/issues)
 
 ![Dart](https://img.shields.io/badge/Dart-%5E3.10.4-0175C2?logo=dart&logoColor=white)
 ![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.38.0-02569B?logo=flutter&logoColor=white)
@@ -59,17 +59,18 @@ state-management ecosystem all keep working.
 
 ## Repository Stats
 
-Live badges above update automatically. Snapshot below was taken from the
-Gitee API on **2026-11-24**:
+The star / fork / issue badges above are live from GitHub. Snapshot below was
+taken on **2026-11-24**, when the repository was newly created:
 
 | Metric | Count |
 | --- | --- |
-| ⭐ Stars | 0 |
-| 🍴 Forks | 0 |
-| 👁 Watchers | 1 |
+| ⭐ GitHub Stars | 0 |
+| 🍴 GitHub Forks | 0 |
 | 🐛 Open issues | 0 |
 
-📊 View live numbers on [Gitee](https://gitee.com/nottyjay/spoke-ml).
+📊 View live numbers on [GitHub](https://github.com/nottyjay/spokeml).
+🪞 This repository is also mirrored on
+[Gitee](https://gitee.com/nottyjay/spoke-ml).
 
 ## Feature Highlights
 
@@ -737,6 +738,6 @@ SpokeML is released under the [MIT License](LICENSE).
 <div align="center">
 
 ⭐ If SpokeML interests you, a star on
-[Gitee](https://gitee.com/nottyjay/spoke-ml) helps others find it.
+[GitHub](https://github.com/nottyjay/spokeml) helps others find it.
 
 </div>
