@@ -1,6 +1,9 @@
 name: spoke_ml
 description: A proof of concept compiler from XML layouts to Flutter widgets.
 version: 0.0.1
+homepage: https://github.com/nottyjay/spokeml
+repository: https://github.com/nottyjay/spokeml
+issue_tracker: https://github.com/nottyjay/spokeml/issues
 environment:
   sdk: ^3.10.4
   flutter: ">=3.38.0"
